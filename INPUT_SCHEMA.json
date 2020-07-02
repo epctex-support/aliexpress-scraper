@@ -8,7 +8,8 @@
             "title": "Search terms",
             "type": "array",
             "description": "Terms for fulltext search in Aliexpress page",
-            "editor": "textfield"
+            "editor": "stringList",
+            "uniqueItems": true
         },
         "shipTo":{
             "title": "Shipping to",
