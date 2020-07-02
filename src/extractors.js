@@ -65,6 +65,7 @@ const getProductDetail = ($, url) => {
     return {
         id: actionModule.productId,
         link: url,
+        ownerMemberId: commonModule.sellerAdminSeq,
         title: titleModule.subject,
         tradeAmount: `${titleModule.tradeCount ? titleModule.tradeCount : ''} ${titleModule.tradeCountUnit ? titleModule.tradeCountUnit : ''}`,
         averageStar: titleModule.feedbackRating.averageStar,
@@ -114,6 +115,67 @@ const getProductDescription = async ($) => {
     return $.html();
 };
 
+const getProductFeedback = async ($) => {
+    const feedbackItems = $('.feedback-item').toArray();
+    const scrapedFeeds = [];
+    for (const item of feedbackItems) {
+        const $item = $(item);
+        scrapedFeeds.push({
+            userName: $item.find('.user-name').text().trim(),
+            userCountry: $item.find('.user-country').text().trim(),
+            productType: $item.find('.user-order-info .first').text().trim(),
+
+            reviewContent: $item.find('.buyer-feedback span:first-child').text().trim(),
+            reviewTime: $item.find('.buyer-feedback .r-time-new').text().trim(),
+        })
+    }
+    return scrapedFeeds;
+};
+
+const getProductQA = async (jsonBody) => {
+    let totalAsk = 0;
+    const productQA = [];
+    for (const question of jsonBody.body.questionList) {
+        totalAsk = question.totalAsk;
+        const parsedQuestion = {
+            lang: question.contentLang,
+            totalAnswer: question.totalAnswer,
+            originalContent: question.content,
+            translateContent: question.translateContent,
+            answers: []
+        }
+        for (const answers of question.answers) {
+            parsedQuestion.answers.push({
+                lang: answers.contentLang,
+                totalAnswer: answers.totalAnswer,
+                originalContent: answers.content,
+                translateContent: answers.translateContent,
+            })
+        }
+        productQA.push(parsedQuestion);
+    }
+    return productQA;
+}
+
+const getTotalQuestions = async (jsonBody) => {
+    let totalQuestions = 0;
+    for (const question of jsonBody.body.questionList) {
+        totalQuestions = question.totalAsk;
+        break;
+    }
+    return totalQuestions;
+}
+
+const getMaxReviews = async ($) => {
+    const maxReviewsText = $('.customer-reviews').text();
+    const match = maxReviewsText.match(/\d+/g);
+    if (match){
+        return match[0];
+    }
+    return 0;
+}
+
+
 
 module.exports = {
     getAllMainCategoryPaths,
@@ -122,4 +184,8 @@ module.exports = {
     getProductsOfPage,
     getProductDetail,
     getProductDescription,
+    getProductFeedback,
+    getMaxReviews,
+    getProductQA,
+    getTotalQuestions
 };

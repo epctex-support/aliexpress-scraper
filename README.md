@@ -8,19 +8,13 @@ The Aliexpress data scraper supports the following features:
 
 - Scrape product details - you can scrape attributes like images, metadata. You can find details below.
 - Scrape product descriptions - you can scrape description HTML of the product.
-
-Features **not** available in this scraper:
-
-- Scrape feedbacks of product detail
-- Scrape questions of product detail
-
+- Scrape feedbacks of product detail - you can scrape users feedbacks (name, country, original content, translated content)
+- Scrape questions of product detail - you can scrape buyers Q&A of product
 
 ## Aliexpress Scraper - future
 
 In the future, this solution will be extended with following features:
 
-- Finding an efficient way to scraping feedbacks
-- Finding an efficient way to scraping questions
 - Implement `extendOutputFunction` so that you can execute your own scraping method.
 
 ## Input Parameters
@@ -33,8 +27,10 @@ The input of this scraper should be JSON containing the list of pages on Aliexpr
 | endPage | Integer | (optional) End page for each category that scraped. With that option you can split your actor into multiple tasks. If not defined, then the actor will scrape all pages    |
 | includeDescription | Boolean | (optional) If you want to fetch description HTML you can enable this option. However keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much CUs.  |
 | startUrls | Array | (optional) List of Aliexpress URLs. You should only provide category detail or product detail URLs |
+| searchTerms | Array | (optional) List of terms what can be searched in aliexpress search engine |
 | proxy | Object | Proxy configuration |
-
+| maxFeedback | Integer | (optional) Max count of scraped feedbacks |
+| maxQuestions | Integer | (optional) Max count of scraped buyer Q&A |
 This solution requires the use of **Proxy servers**, either your own proxy servers or you can use <a href="https://www.apify.com/docs/proxy">Apify Proxy</a>.
 
 
@@ -51,7 +47,9 @@ The actor optimized to run blazing fast and scrape many product as possible. The
 	"startUrls":   [
 		{ "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
 		{ "url": "https://www.aliexpress.com/item/32940810951.html" }
-	]
+	],
+        "maxFeedbacks": 10,
+        "maxQuestions": 15
 }
 
 ```
