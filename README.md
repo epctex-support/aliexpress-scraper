@@ -10,12 +10,7 @@ The Aliexpress data scraper supports the following features:
 - Scrape product descriptions - you can scrape description HTML of the product.
 - Scrape feedbacks of product detail - you can scrape users feedbacks (name, country, original content, translated content)
 - Scrape questions of product detail - you can scrape buyers Q&A of product
-
-## Aliexpress Scraper - future
-
-In the future, this solution will be extended with following features:
-
-- Implement `extendOutputFunction` so that you can execute your own scraping method.
+- You can set language, currency and region for shipping
 
 ## Input Parameters
 
@@ -23,14 +18,18 @@ The input of this scraper should be JSON containing the list of pages on Aliexpr
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
+| searchTerms | Array | (optional) List of terms what can be searched in aliexpress search engine |
+| language | String | (optional) Select language from list in which will be products default is English (en_US) |
+| shipTo | String | (optional) Select country where the products will be shipped default is US  |
+| currency | String | (optional) Select currency in which the products price will be default is USD |
 | startPage | Integer | (optional) Starting page for each category that scraped. With that option you can split your actor into multiple tasks. Default is 1. |
 | endPage | Integer | (optional) End page for each category that scraped. With that option you can split your actor into multiple tasks. If not defined, then the actor will scrape all pages    |
 | includeDescription | Boolean | (optional) If you want to fetch description HTML you can enable this option. However keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much CUs.  |
 | startUrls | Array | (optional) List of Aliexpress URLs. You should only provide category detail or product detail URLs |
-| searchTerms | Array | (optional) List of terms what can be searched in aliexpress search engine |
 | proxy | Object | Proxy configuration |
 | maxFeedback | Integer | (optional) Max count of scraped feedbacks |
 | maxQuestions | Integer | (optional) Max count of scraped buyer Q&A |
+| extendOutputFunction | String | (optional) Function that takes a JQuery handle ($) as argument and returns object with data |
 This solution requires the use of **Proxy servers**, either your own proxy servers or you can use <a href="https://www.apify.com/docs/proxy">Apify Proxy</a>.
 
 
@@ -40,6 +39,10 @@ The actor optimized to run blazing fast and scrape many product as possible. The
 ### Aliexpress Scraper Input example
 ```json
 {
+	"searchTerms": ["mobile"],
+	"language": "en_US",
+	"shipTo": "US",
+	"currency": "USD",
 	"startPage": 1,
 	"endPage": 10,
 	"includeDescription": false,
@@ -48,8 +51,8 @@ The actor optimized to run blazing fast and scrape many product as possible. The
 		{ "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
 		{ "url": "https://www.aliexpress.com/item/32940810951.html" }
 	],
-        "maxFeedbacks": 10,
-        "maxQuestions": 15
+	"maxFeedbacks": 5,
+	"maxQuestions":3
 }
 
 ```
@@ -73,105 +76,220 @@ The structure of each item in Aliexpress products looks like this:
 
 ```json
 {
-  "id": 32940810951,
-  "link": "https://www.aliexpress.com/item/32940810951.html",
-  "title": "50Pcs  M3  M4 M5 M6 M8 M10 M12  DIN9021 GB96 304/A2-70 Stainless Steel Large Size Flat Washer",
-  "tradeAmount": "747 orders",
-  "averageStar": "5.0",
+  "id": 33030949663,
+  "link": "https://www.aliexpress.com/item/33030949663.html?algo_pvid=4f9da8f7-0d3c-4484-9db1-cafaf699a955&algo_expid=4f9da8f7-0d3c-4484-9db1-cafaf699a955-58&btsid=0ab6fab215937737510214942edbed&ws_ab_test=searchweb0_0,searchweb201602_,searchweb201603_",
+  "ownerMemberId": 220138526,
+  "title": "Ultra Thin Mobile Phone Cases for Xiaomi Mi 9T / 9T Pro Back Cover Case 360 Camera Protective Mi9TPro 9TPro Silicone TPU Coque",
+  "tradeAmount": "2786 orders",
+  "averageStar": "4.7",
+  "descriptionURL": "https://aeproductsourcesite.alicdn.com/product/description/pc/v2/en_US/desc.htm?productId=33030949663&key=H8e670276aa194227861097826443d8f5D.zip&token=b95e1a6f392242c57140d3e166d276ad",
   "store": {
-    "followingNumber": 367,
-    "establishedAt": "Sep 2, 2014",
-    "positiveNum": 6675,
-    "positiveRate": "99.0%",
-    "name": "Chang Da Transmission Store",
-    "id": 1420163,
-    "url": "https://www.aliexpress.com/store/1420163",
-    "topRatedSeller": false
+    "followingNumber": 9468,
+    "establishedAt": "Oct 3, 2013",
+    "positiveNum": 12506,
+    "positiveRate": "94.7%",
+    "name": "GOINSIE Official Store",
+    "id": 937981,
+    "url": "https://www.aliexpress.com/store/937981",
+    "topRatedSeller": true
   },
   "specs": [
     {
-      "Model Number": "M3 M4 M5 M6 M8 M10 M12"
+      "Brand Name": "GOINSIE"
     },
     {
-      "is_customized": "Yes"
+      "Type": "Fitted Case"
     },
     {
-      "DIY Supplies": "Metalworking"
+      "Features": "Transparent & Clear Soft"
+    },
+    {
+      "Compatible Brand": "Xiaomi"
+    },
+    {
+      "Design": "Plain"
+    },
+    {
+      "Design": "Transparent"
+    },
+    {
+      "Function": "Waterproof"
+    },
+    {
+      "Function": "Dirt-resistant"
+    },
+    {
+      "Function": "Anti-knock"
+    },
+    {
+      "Function": "Heavy Duty Protection"
+    },
+    {
+      "Function": "Adsorption"
+    },
+    {
+      "Model Number": "for Xiaomi Mi 9T / 9T Pro"
+    },
+    {
+      "Status": "In Stock"
+    },
+    {
+      "Delivery": "Free Shipping"
     }
   ],
   "categories": [
     "All Categories",
-    "Home Improvement",
-    "Hardware",
-    "Fasteners & Hooks",
-    "Washers"
+    "Cellphones & Telecommunications",
+    "Phone Bags & Cases",
+    "Fitted Cases"
   ],
-  "wishedCount": 612,
-  "quantity": 5036,
+  "wishedCount": 4791,
+  "quantity": 1258,
   "photos": [
-    "https://ae01.alicdn.com/kf/HTB1qvwsXnHuK1RkSndVq6xVwpXa0/50Pcs-M3-M4-M5-M6-M8-M10-M12-DIN9021-GB96-304-A2-70-Stainless-Steel-Large.jpg"
+    "https://ae01.alicdn.com/kf/H313c225b670445348cddb28c5648c3f70/Ultra-Thin-Mobile-Phone-Cases-for-Xiaomi-Mi-9T-9T-Pro-Back-Cover-Case-360-Camera.jpg",
+    "https://ae01.alicdn.com/kf/H90116ac8272f4d4dba9b3843b94dbf28i/Ultra-Thin-Mobile-Phone-Cases-for-Xiaomi-Mi-9T-9T-Pro-Back-Cover-Case-360-Camera.jpg",
+    "https://ae01.alicdn.com/kf/H34a75c2ff0054e939864a990bda3441bs/Ultra-Thin-Mobile-Phone-Cases-for-Xiaomi-Mi-9T-9T-Pro-Back-Cover-Case-360-Camera.jpg",
+    "https://ae01.alicdn.com/kf/H1c5ffbcaf51943bcaf865635fafebe42D/Ultra-Thin-Mobile-Phone-Cases-for-Xiaomi-Mi-9T-9T-Pro-Back-Cover-Case-360-Camera.jpg",
+    "https://ae01.alicdn.com/kf/H4b8c575d6ee240d3a8c291309ca5c978n/Ultra-Thin-Mobile-Phone-Cases-for-Xiaomi-Mi-9T-9T-Pro-Back-Cover-Case-360-Camera.jpg",
+    "https://ae01.alicdn.com/kf/H983e6b11f05e48c38ac899ae11686ffem/Ultra-Thin-Mobile-Phone-Cases-for-Xiaomi-Mi-9T-9T-Pro-Back-Cover-Case-360-Camera.jpg"
   ],
   "skuOptions": [
     {
-      "name": "Inner Diameter",
+      "name": "Material",
       "values": [
-        "M4  50PCS",
-        "M5  50PCS",
-        "M6  20PCS",
-        "M8  20PCS",
-        "M10  10PCS",
-        "M12  5PCS",
-        "M3   50PCS"
+        "Xiaomi Mi 9T",
+        "Xiaomi Mi 9T Pro"
+      ]
+    },
+    {
+      "name": "Color",
+      "values": [
+        null
       ]
     }
   ],
   "prices": [
     {
-      "price": "US $0.88",
+      "price": "US $3.39",
       "attributes": [
-        "M16"
+        "PC",
+        "Clear"
       ]
     },
     {
-      "price": "US $3.99",
+      "price": "US $3.39",
       "attributes": [
-        "M18"
-      ]
-    },
-    {
-      "price": "US $3.12",
-      "attributes": [
-        "M1.5"
-      ]
-    },
-    {
-      "price": "US $2.99",
-      "attributes": [
-        "M21"
-      ]
-    },
-    {
-      "price": "US $3.99",
-      "attributes": [
-        "M3.5"
-      ]
-    },
-    {
-      "price": "US $3.99",
-      "attributes": [
-        "M2.6"
-      ]
-    },
-    {
-      "price": "US $1.99",
-      "attributes": [
-        "M17"
+        "TPU",
+        "Clear"
       ]
     }
   ],
-  "companyId": 231710547,
-  "memberId": 221826159,
-  "description": "<h1 style=\"text-align: center;\">\tM3 &#xA0;M4 M5 M6 M8 M10 M12 &#xA0;DIN9021 GB96 304/A2-70 Stainless Steel Large Size Flat Washer </h1><p style=\"margin: 0.0px;text-align: center;\">\t<img src=\"https://ae01.alicdn.com/kf/HTB1xwcsXdfvK1RjSspfq6zzXFXaR.jpg?width=800&amp;height=800&amp;hash=1600\"><img src=\"https://ae01.alicdn.com/kf/HTB1lPv8fxTpK1RjSZFKq6y2wXXaL.jpg?width=775&amp;height=469&amp;hash=1244\"><img src=\"https://ae01.alicdn.com/kf/HTB1oJQcfAPoK1RjSZKbq6x1IXXaA.jpg?width=768&amp;height=456&amp;hash=1224\"></p><p style=\"text-align: center;\">\t&#xA0; </p><p style=\"text-align: center;\">\t&#xA0; </p><p style=\"margin: 0.0px;text-align: center;\">\t&#xA0; </p><p style=\"text-align: center;\">\t&#xA0; </p><p style=\"text-align: center;\">\t&#xA0; </p>\n<script>window.adminAccountId=221826159;</script>\n"
+  "companyId": 230202141,
+  "memberId": 220138526,
+  "userFeedbacks": [
+    {
+      "userName": "I***v",
+      "userCountry": "RU",
+      "productType": "Color:Clear",
+      "reviewContent": "The seller is well done, fast delivery, all as in the description.",
+      "reviewTime": "26 Jun 2020 03:40"
+    },
+    {
+      "userName": "A***a",
+      "userCountry": "RU",
+      "productType": "Color:Clear",
+      "reviewContent": "Ordered 04.12.2019, received 25.01.2020 in the Sverdlovsk region.\r\nSilicone Case, transparent, in the hands does not slip, hold in the hand comfortably, went perfectly to the phone, all holes in place,\r\nFingerprints leaves\r\nThe seller is honest, sent",
+      "reviewTime": "25 Jan 2020 21:54"
+    },
+    {
+      "userName": "P***v",
+      "userCountry": "RU",
+      "productType": "Color:Clear",
+      "reviewContent": "Record delivery to Syzran. 12 days! Faster than the phone for which I ordered. A new way of gluing I liked, the films perfectly lay down and perfectly fit in size. Boldly order.",
+      "reviewTime": "22 Jan 2020 04:01"
+    },
+    {
+      "userName": "G***g",
+      "userCountry": "RU",
+      "productType": "Color:Clear",
+      "reviewContent": "Normal silicone case. The side of the cover does not stand for the edges of the screen. The complete case is better.",
+      "reviewTime": "16 May 2020 01:22"
+    },
+    {
+      "userName": "A***v",
+      "userCountry": "RU",
+      "productType": "Color:Clear",
+      "reviewContent": "Everything came quickly, quality. I ordered 2 PCs transparent",
+      "reviewTime": "06 Apr 2020 09:08"
+    }
+  ],
+  "questionAndAnswers": [
+    {
+      "lang": "ru",
+      "totalAnswer": 4,
+      "originalContent": "Подойдёт для xiaomi k20? ",
+      "translateContent": "Suitable for Xiaomi K20?",
+      "answers": [
+        {
+          "lang": "ru",
+          "originalContent": "конечно да",
+          "translateContent": "Of course yes"
+        }
+      ]
+    },
+    {
+      "lang": "es",
+      "totalAnswer": 3,
+      "originalContent": "protege las cámaras??",
+      "translateContent": "Protects the still cameras??",
+      "answers": [
+        {
+          "lang": "ru",
+          "originalContent": "Абсолютно свободное движение. ",
+          "translateContent": "Absolutely free movement."
+        }
+      ]
+    },
+    {
+      "lang": "ru",
+      "totalAnswer": 3,
+      "originalContent": "скольский?",
+      "translateContent": "Skolsky?",
+      "answers": [
+        {
+          "lang": "uk",
+          "originalContent": "нет,как раз норм ",
+          "translateContent": ""
+        }
+      ]
+    },
+    {
+      "lang": "ru",
+      "totalAnswer": 2,
+      "originalContent": "Защитное стекло не поднимает?",
+      "translateContent": "Protective glass does not lift?",
+      "answers": [
+        {
+          "lang": "ru",
+          "originalContent": "ой,бро, это не тот чехол, а этот чехол мне даже не пришел",
+          "translateContent": "Oh, bro, this is not the case, and this case did not even come to me"
+        }
+      ]
+    },
+    {
+      "lang": "ru",
+      "totalAnswer": 2,
+      "originalContent": "Заказал прошло 78 дней не пришло продавец не отвечает УРО Д",
+      "translateContent": "Ordered 78 days passed did not come the seller does not answer the uro D",
+      "answers": [
+        {
+          "lang": "ru",
+          "originalContent": "Мне дошел за три недели, одним пакетом вместе с еще пятью заказами от разных продавцов. ",
+          "translateContent": "I got in three weeks, one package together with five more orders from different sellers."
+        }
+      ]
+    }
+  ]
 }
 
 ```

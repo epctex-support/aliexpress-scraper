@@ -99,12 +99,12 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
 // Fetches product detail from detail page
 exports.PRODUCT = async ({ $, userInput, request, body }, { requestQueue }) => {
     const { productId } = request.userData;
-    const { includeDescription, maxFeedbacks } = userInput;
+    const { extendOutputFunction } = userInput;
 
     log.info(`CRAWLER -- Fetching product: ${productId}`);
 
     // Fetch product details
-    const product = await extractors.getProductDetail($, request.url);
+    const product = await extractors.getProductDetail($, request.url, extendOutputFunction);
 
     await tools.whatNextToDo(product, userInput, request, requestQueue);
 };

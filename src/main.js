@@ -1,7 +1,7 @@
 const Apify = require('apify');
 const Promise = require('bluebird');
 const tools = require('./tools');
-const countries = require('./countries.json');
+const { SEARCH_COOKIES_HEADER } = require('./constants')
 
 const {
     utils: { log },
@@ -11,17 +11,12 @@ const {
 Apify.main(async () => {
     log.info('PHASE -- STARTING ACTOR.');
 
-    const c = countries.result.map(c => {
-        return c.currencyName;
-    })
-
     const userInput = await Apify.getInput();
 
     log.info('ACTOR OPTIONS: -- ', userInput);
 
     // Create request queue
     const requestQueue = await Apify.openRequestQueue();
-
 
     if (!tools.checkInputParams(userInput)) {
         throw new Error('You must define at least one of these parameters: searchTerm, startPage ');
@@ -54,8 +49,10 @@ Apify.main(async () => {
         // Proxy options
         proxyConfiguration,
         prepareRequestFunction: ({ request }) => {
+            const { language, shipTo, currency } = userInput;
             request.headers = {
                 Connection: 'keep-alive',
+                cookie: SEARCH_COOKIES_HEADER(currency, shipTo, language),
             };
             return request;
         },
@@ -67,17 +64,10 @@ Apify.main(async () => {
             // Status code check
             if (!response || response.statusCode !== 200
                 || request.url.includes('login.')
+                || body.includes('x5referer')
                 || $('body').data('spm') === 'buyerloginandregister') {
                 throw new Error(`We got blocked by target on ${request.url}`);
             }
-
-            // if (request.userData.label !== 'DESCRIPTION' && !$('script').text().includes('runParams')) {
-            //     throw new Error(`We got blocked by target on ${request.url}`);
-            // }
-            //
-            // if ($('html').text().includes('/_____tmd_____/punish')) {
-            //     throw new Error(`We got blocked by target on ${request.url}`);
-            // }
 
             // Random delay
             await Promise.delay(Math.random() * 3000);

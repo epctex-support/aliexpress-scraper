@@ -43,7 +43,7 @@ const getProductsOfPage = ($) => {
 };
 
 // Fetch basic product detail from a global object `runParams`
-const getProductDetail = ($, url) => {
+const getProductDetail = async ($, url, extendOutputFunction) => {
     const dataScript = $($('script').filter((i, script) => $(script).html().includes('runParams')).get()[0]).html();
 
     const { data } = safeEval(dataScript.split('window.runParams = ')[1].split('var GaData')[0].replace(/;/g, ''));
@@ -60,6 +60,11 @@ const getProductDetail = ($, url) => {
         recommendModule,
         commonModule,
     } = data;
+    let extendOutputData = {};
+    if (extendOutputFunction) {
+        extendOutputFunction = tools.evalExtendOutputFunction(extendOutputFunction);
+        extendOutputData = await extendOutputFunction($);
+    }
 
 
     return {
@@ -106,6 +111,7 @@ const getProductDetail = ($, url) => {
         })),
         companyId: recommendModule.companyId,
         memberId: commonModule.sellerAdminSeq,
+        ...extendOutputData
     };
 };
 
@@ -123,7 +129,7 @@ const getProductFeedback = async ($) => {
         scrapedFeeds.push({
             userName: $item.find('.user-name').text().trim(),
             userCountry: $item.find('.user-country').text().trim(),
-            productType: $item.find('.user-order-info .first').text().trim(),
+            productType: $item.find('.user-order-info .first').text().trim().replace(/[\t|\n]+/, ''),
 
             reviewContent: $item.find('.buyer-feedback span:first-child').text().trim(),
             reviewTime: $item.find('.buyer-feedback .r-time-new').text().trim(),

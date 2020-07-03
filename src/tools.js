@@ -1,5 +1,6 @@
 const Apify = require('apify');
 const URL = require('url');
+const vm = require('vm');
 const routes = require('./routes');
 const { LABELS, FEEDBACK_URL, QA_URL, COMMON_HEADER, SEARCH_URL } = require('./constants')
 const {
@@ -15,6 +16,18 @@ exports.createRouter = (globalContext) => {
         return route(requestContext, globalContext);
     };
 };
+
+exports.evalExtendOutputFunction = (functionString) => {
+    let func;
+
+    try {
+        func = vm.runInThisContext(`(${functionString})`);
+    } catch (err) {
+        throw new Error(`Compilation of extendOutputFunction failed.\n${err.message}\n${err.stack.substr(err.stack.indexOf('\n'))}`);
+    }
+
+    return func;
+}
 
 // Creates proxy URL with user input
 exports.createProxyUrl = async (userInput) => {
@@ -32,10 +45,10 @@ exports.createProxyUrl = async (userInput) => {
 
 exports.checkInputParams = (userInput) => {
     let run = false;
-    const { startUrls, searchTerm } = userInput;
-    if (startUrls.length > 0){
+    const { startUrls, searchTerms } = userInput;
+    if (startUrls && startUrls.length > 0){
         run = true;
-    } else if (searchTerm.length > 0) {
+    } else if (searchTerms && searchTerms.length > 0) {
         run = true;
     }
     return run;
