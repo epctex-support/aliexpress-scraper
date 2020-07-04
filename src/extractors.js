@@ -1,5 +1,6 @@
 const safeEval = require('safe-eval');
 const flattenDeep = require('lodash/flattenDeep');
+const tool = require('./tools')
 
 // Fetch all main category paths from homepage
 const getAllMainCategoryPaths = ($) => {
