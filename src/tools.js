@@ -91,6 +91,7 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
     }
     if (searchTerms) {
         urls = urls.concat(searchTerms.map((searchTerms) => {
+            searchTerms = searchTerms.replace(" ", "+");
             const url = SEARCH_URL(searchTerms);
             return {
                 url,
@@ -136,7 +137,7 @@ exports.whatNextToDo = async (product, userInput, request, requestQueue, maxRevi
                 product,
             },
         }, { forefront: true });
-    } else if (maxFeedbacks > 0 && userFeedbacks.length < maxFeedbacks && userFeedbacks.length < maxReviews) {
+    } else if (maxFeedbacks > 0 && userFeedbacks.length < maxFeedbacks && userFeedbacks.length < maxReviews && !qaDone) {
         const newFeedbackPage = feedbackPage + 1;
         await requestQueue.addRequest({
             url: FEEDBACK_URL(product.id, product.ownerMemberId, newFeedbackPage),

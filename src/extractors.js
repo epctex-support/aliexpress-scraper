@@ -127,13 +127,26 @@ const getProductFeedback = async ($) => {
     const scrapedFeeds = [];
     for (const item of feedbackItems) {
         const $item = $(item);
+        let infos = $item.find('.user-order-info span').toArray();
+        const info = [];
+        for (const i of infos) {
+            const text = $(i).text().trim().replace(/[\t|\n]+/, '');
+            const arr = text.split(':');
+            info[arr[0]] = arr[1].trim();
+        }
+        let star = undefined;
+        const starsWidth = $('.f-rate-info .star-view > span').eq(0).attr('style');
+        const pxMatch = starsWidth.match(/\d+/);
+        if (pxMatch) {
+            star = 6 - (100 / parseInt(pxMatch[0]));
+        }
         scrapedFeeds.push({
             userName: $item.find('.user-name').text().trim(),
             userCountry: $item.find('.user-country').text().trim(),
-            productType: $item.find('.user-order-info .first').text().trim().replace(/[\t|\n]+/, ''),
-
+            userStar: star,
             reviewContent: $item.find('.buyer-feedback span:first-child').text().trim(),
             reviewTime: $item.find('.buyer-feedback .r-time-new').text().trim(),
+            info
         })
     }
     return scrapedFeeds;
