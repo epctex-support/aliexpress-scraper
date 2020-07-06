@@ -71,7 +71,7 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
                     baseUrl: link,
                     productId: link.split('/item/')[1].split('.htm')[0],
                 };
-            } else if (link.includes('/category/')) {
+            } else if (link.includes('/category/') || link.includes('/wholesale')) {
                 routeType = LABELS.CATEGORY;
                 userData = {
                     baseUrl: link,
@@ -97,7 +97,7 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
                 url,
                 uniqueKey: url,
                 userData: {
-                    label: LABELS.CATEGORY,
+                    label: LABELS.LIST,
                     baseUrl: url
                 }
             }

@@ -64,7 +64,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
         if (endPage > 0 ? pageNum + 1 <= endPage : true) {
             // Add next page of same category to queue
             await requestQueue.addRequest({
-                url: `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc`,
+                url: `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`,
                 userData: {
                     label: LABELS.LIST,
                     pageNum: pageNum + 1,
