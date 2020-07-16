@@ -1,16 +1,5 @@
 # Actor - Aliexpress Scraper
 
-## Change log 2.0
-We added some new parameters in the new version.
-- searchTerms : List of terms witch can be searched by Aliexpress search engine
-- language : Select language of aliexpress site, option has effect on product detail, product feedback, Q&A
-- shipTo : Select country where product will be shipped
-- currency : Select currency of the product price
-- maxFeedback : You can limit of scraped feedback items
-- maxQuestions : You can limit of scraped Q&A items
-- extendOutputFunction : You can write your own scraped function which will be applicated on product detail page
-There should be no breaking changes in this version
-
 ## Aliexpress scraper
 
 Since Aliexpress doesn't provide an API, this actor should help you to retrieve data from it.
@@ -22,6 +11,10 @@ The Aliexpress data scraper supports the following features:
 - Scrape feedbacks of product detail - you can scrape users feedbacks (name, country, original content, translated content)
 - Scrape questions of product detail - you can scrape buyers Q&A of product
 - You can set language, currency and region for shipping
+
+## Bugs, fixes, updates and changelog
+This scraper is under active development. Check [CHANGELOG.md](https://github.com/tugkan/aliexpress-scraper/blob/master/CHANGELOG.md) for more detailed information
+- 2020-16-07 - New SDK version, new parameters for better scraping.
 
 ## Input Parameters
 
