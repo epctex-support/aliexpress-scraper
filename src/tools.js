@@ -122,7 +122,7 @@ exports.getQAData = async (productId, referer, page = 1) => {
     return response.body;
 }
 
-exports.whatNextToDo = async (product, userInput, request, requestQueue, maxReviews = 1, qaDone = false) => {
+exports.whatNextToDo = async (product, userInput, request, requestQueue, maxReviews = 1, qaDone = false, reviewsDone = false) => {
     const { feedbackPage = 0 } = request.userData;
     const { includeDescription, maxFeedbacks, maxQuestions } = userInput;
     let { userFeedbacks, questionAndAnswers } = product;
@@ -144,7 +144,7 @@ exports.whatNextToDo = async (product, userInput, request, requestQueue, maxRevi
                 product,
             },
         }, { forefront: true });
-    } else if (maxFeedbacks > 0 && userFeedbacks.length < maxFeedbacks && userFeedbacks.length < maxReviews && !qaDone) {
+    } else if (maxFeedbacks > 0 && userFeedbacks.length < maxFeedbacks && userFeedbacks.length < maxReviews && !qaDone && !reviewsDone) {
         const newFeedbackPage = feedbackPage + 1;
         await requestQueue.addRequest({
             url: FEEDBACK_URL(product.id, product.ownerMemberId, newFeedbackPage),

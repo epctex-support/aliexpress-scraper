@@ -142,10 +142,11 @@ exports.FEEDBACK = async ({ $, userInput, request }, { requestQueue }) => {
     log.info(`CRAWLER -- Fetching product feedback ${product.id}, page: ${feedbackPage}`);
 
     const { userFeedbacks } = product;
-
+    let reviewsDone = false;
     const maxReviews = await extractors.getMaxReviews($);
     if (userFeedbacks.length < maxReviews) {
         const newFeedbacks = await extractors.getProductFeedback($);
+        reviewsDone = newFeedbacks.length === 0
         for (const f of newFeedbacks) {
             if (userFeedbacks.length < maxFeedbacks) {
                 userFeedbacks.push(f);
@@ -153,7 +154,7 @@ exports.FEEDBACK = async ({ $, userInput, request }, { requestQueue }) => {
         }
         product.userFeedbacks = userFeedbacks;
     }
-    await tools.whatNextToDo(product, userInput, request, requestQueue, maxReviews);
+    await tools.whatNextToDo(product, userInput, request, requestQueue, maxReviews, false, reviewsDone);
 };
 
 exports.QA = async ({ userInput, request }) => {
