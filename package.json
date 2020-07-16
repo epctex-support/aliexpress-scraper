@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "Aliexpress.com scraper.",
 	"dependencies": {
-		"apify": "^0.21.1-beta.5",
+		"apify": "^0.21.0",
 		"bluebird": "^3.7.1",
 		"cheerio": "^1.0.0-rc.3",
 		"lodash": "^4.17.15",
