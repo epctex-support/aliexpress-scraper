@@ -37,7 +37,7 @@ const COMMON_HEADER = (referer = 'www.aliexpress.com') =>{
 
 const SEARCH_COOKIES_HEADER = (currency = 'USD', region = 'US', language = 'en_US') => `aep_usuc_f=site=${LOCALE_SITE[language]}&c_tp=${currency}&region=${region}&b_locale=${language};`;
 
-const SEARCH_URL = (term) => `https://www.aliexpress.com/wholesale?d=y&origin=n&SearchText=${term}&catId=0`;
+const SEARCH_URL = (term, page = null) => `https://www.aliexpress.com/wholesale?d=y&origin=n&SearchText=${term}&catId=0${page ? `&page=${page}` : ''}`;
 const FEEDBACK_URL = (productId, ownerMemberId, page = 1) => `https://feedback.aliexpress.com/display/productEvaluation.htm?v=2&page=${page}&productId=${productId}&ownerMemberId=${ownerMemberId}&i18n=true`;
 const QA_URL = (productId, page) => `https://www.aliexpress.com/aeglodetailweb/api/questions?productId=${productId}&currentPage=${page}&pageSize=100`;
 

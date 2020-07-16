@@ -4,6 +4,16 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
+        "startUrls": {
+            "title": "Start URLs",
+            "type": "array",
+            "description": "URLs to start with. It should be category or product detail URLs",
+            "prefill": [
+                { "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
+                { "url": "https://www.aliexpress.com/item/32940810951.html" }
+            ],
+            "editor": "requestListSources"
+        },
         "searchTerms": {
             "title": "Search terms",
             "type": "array",
@@ -54,29 +64,12 @@
             "description": "The page number that you want to end with. By default there is no end page.",
             "editor": "number"
         },
-        "startUrls": {
-            "title": "Start URLs",
-            "type": "array",
-            "description": "URLs to start with. It should be category or product detail URLs",
-            "prefill": [
-                { "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
-                { "url": "https://www.aliexpress.com/item/32940810951.html" }
-            ],
-            "editor": "requestListSources"
-        },
         "includeDescription": {
             "title": "Description",
             "type": "boolean",
             "description": "Include description for products. It might slow the process a bit",
             "editor": "checkbox",
             "default": false
-        },
-        "proxy":{
-            "title": "Proxy configuration",
-            "type": "object",
-            "description": "Select proxies to be used by your crawler.",
-            "default": { "useApifyProxy": true },
-            "editor": "proxy"
         },
         "maxFeedbacks": {
             "title": "Max feedback count",
@@ -91,6 +84,13 @@
             "description": "Set number of maximum scraped Q&A",
             "default": 5,
             "editor": "number"
+        },
+        "proxy":{
+            "title": "Proxy configuration",
+            "type": "object",
+            "description": "Select proxies to be used by your crawler.",
+            "default": { "useApifyProxy": true },
+            "editor": "proxy"
         },
         "extendOutputFunction": {
             "title": "Extend output function",

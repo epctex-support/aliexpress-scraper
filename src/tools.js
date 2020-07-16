@@ -55,13 +55,14 @@ exports.checkInputParams = (userInput) => {
 }
 
 // Detects url and map them to routes
-exports.mapStartUrls = ({ startUrls, searchTerms }) => {
+exports.mapStartUrls = ({ startPage, startUrls, searchTerms }) => {
     let urls = [];
     // Fetch start urls
     if (startUrls) {
         urls = urls.concat(startUrls.map((startUrl) => {
             const parsedURL = URL.parse(startUrl.url);
             const link = `https://www.aliexpress.com${parsedURL.pathname}`;
+            let url = link;
             let routeType = '';
             let userData = {};
 
@@ -73,8 +74,12 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
                 };
             } else if (link.includes('/category/') || link.includes('/wholesale')) {
                 routeType = LABELS.CATEGORY;
+                if (startPage) {
+                    url = `${url}?page=${startPage}`
+                }
                 userData = {
                     baseUrl: link,
+                    pageNum: startPage ? startPage : 1,
                 };
             } else {
                 throw new Error('Wrong URL provided to Start URLS!');
@@ -84,7 +89,7 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
 
             return {
                 uniqueKey: link,
-                url: link,
+                url,
                 userData,
             };
         }));
@@ -92,13 +97,15 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
     if (searchTerms) {
         urls = urls.concat(searchTerms.map((searchTerms) => {
             searchTerms = searchTerms.replace(" ", "+");
-            const url = SEARCH_URL(searchTerms);
+            const url = SEARCH_URL(searchTerms, startPage);
             return {
                 url,
                 uniqueKey: url,
                 userData: {
                     label: LABELS.LIST,
-                    baseUrl: url
+                    pageNum: startPage ? startPage : 1,
+                    searchTerm: searchTerms,
+                    baseUrl: 'https://www.aliexpress.com/wholesale'
                 }
             }
         }))

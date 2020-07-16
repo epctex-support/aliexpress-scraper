@@ -19,7 +19,7 @@ Apify.main(async () => {
     const requestQueue = await Apify.openRequestQueue();
 
     if (!tools.checkInputParams(userInput)) {
-        throw new Error('You must define at least one of these parameters: searchTerm, startPage ');
+        throw new Error('You must define at least one of these parameters: searchTerm, startUrls ');
     }
 
     const mappedStartUrls = tools.mapStartUrls(userInput);

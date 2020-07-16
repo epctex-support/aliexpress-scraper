@@ -2,7 +2,7 @@
 const Apify = require('apify');
 const extractors = require('./extractors');
 const tools = require('./tools');
-const { LABELS } = require('./constants');
+const { LABELS, SEARCH_URL } = require('./constants');
 
 const {
     utils: { log },
@@ -50,8 +50,8 @@ exports.CATEGORY = async ({ $, request }, { requestQueue }) => {
 // Add next page on request queue
 // Fetch products from list and add all links to request queue
 exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
-    const { endPage = -1 } = userInput;
-    const { pageNum = 1, baseUrl } = request.userData;
+    const { endPage = -1, scrapProducts = true } = userInput;
+    const { pageNum = 1, baseUrl, searchTerm = null } = request.userData;
 
     log.info(`CRAWLER -- Fetching category: ${request.url} with page: ${pageNum}`);
 
@@ -62,12 +62,19 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
     if (productLinks.length > 0) {
         // Check user input
         if (endPage > 0 ? pageNum + 1 <= endPage : true) {
+            let url;
+            if (searchTerm) {
+                url = SEARCH_URL(searchTerm, pageNum + 1)
+            } else {
+                url = `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`;
+            }
             // Add next page of same category to queue
             await requestQueue.addRequest({
-                url: `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`,
+                url,
                 userData: {
                     label: LABELS.LIST,
                     pageNum: pageNum + 1,
+                    searchTerm,
                     baseUrl,
                 },
             });
@@ -75,15 +82,17 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
 
 
         // Add all products to request queue
-        for (const productLink of productLinks) {
-            await requestQueue.addRequest({
-                uniqueKey: `${productLink.id}`,
-                url: `https:${productLink.link}`,
-                userData: {
-                    label: LABELS.PRODUCT,
-                    productId: productLink.id,
-                },
-            }, { forefront: true });
+        if (scrapProducts) {
+            for (const productLink of productLinks) {
+                await requestQueue.addRequest({
+                    uniqueKey: `${productLink.id}`,
+                    url: `https:${productLink.link}`,
+                    userData: {
+                        label: LABELS.PRODUCT,
+                        productId: productLink.id,
+                    },
+                }, { forefront: true });
+            }
         }
     } else {
         // End of category with page

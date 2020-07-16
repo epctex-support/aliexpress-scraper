@@ -37,9 +37,9 @@ The input of this scraper should be JSON containing the list of pages on Aliexpr
 | endPage | Integer | (optional) End page for each category that scraped. With that option you can split your actor into multiple tasks. If not defined, then the actor will scrape all pages    |
 | includeDescription | Boolean | (optional) If you want to fetch description HTML you can enable this option. However keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much CUs.  |
 | startUrls | Array | (optional) List of Aliexpress URLs. You should only provide category detail or product detail URLs |
-| proxy | Object | Proxy configuration |
 | maxFeedback | Integer | (optional) Max count of scraped feedbacks |
 | maxQuestions | Integer | (optional) Max count of scraped buyer Q&A |
+| proxy | Object | Proxy configuration |
 | extendOutputFunction | String | (optional) Function that takes a JQuery handle ($) as argument and returns object with data |
 This solution requires the use of **Proxy servers**, either your own proxy servers or you can use <a href="https://www.apify.com/docs/proxy">Apify Proxy</a>.
 
