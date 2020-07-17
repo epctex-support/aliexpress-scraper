@@ -31,5 +31,6 @@ RUN npm --quiet set progress=false \
 # for simple source file changes.
 COPY . ./
 
-# Specify how to run the source code
-CMD npm start
+ENV APIFY_DISABLE_OUTDATED_WARNING 1
+
+# CMD is specified in base file
