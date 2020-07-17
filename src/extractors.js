@@ -1,5 +1,6 @@
 const safeEval = require('safe-eval');
 const flattenDeep = require('lodash/flattenDeep');
+const tools = require('./tools')
 
 // Fetch all main category paths from homepage
 const getAllMainCategoryPaths = ($) => {
@@ -43,7 +44,7 @@ const getProductsOfPage = ($) => {
 };
 
 // Fetch basic product detail from a global object `runParams`
-const getProductDetail = ($, url) => {
+const getProductDetail = async ($, url, extendOutputFunction) => {
     const dataScript = $($('script').filter((i, script) => $(script).html().includes('runParams')).get()[0]).html();
 
     const { data } = safeEval(dataScript.split('window.runParams = ')[1].split('var GaData')[0].replace(/;/g, ''));
@@ -60,11 +61,17 @@ const getProductDetail = ($, url) => {
         recommendModule,
         commonModule,
     } = data;
+    let extendOutputData = {};
+    if (extendOutputFunction) {
+        extendOutputFunction = tools.evalExtendOutputFunction(extendOutputFunction);
+        extendOutputData = await extendOutputFunction($);
+    }
 
 
     return {
         id: actionModule.productId,
         link: url,
+        ownerMemberId: commonModule.sellerAdminSeq,
         title: titleModule.subject,
         tradeAmount: `${titleModule.tradeCount ? titleModule.tradeCount : ''} ${titleModule.tradeCountUnit ? titleModule.tradeCountUnit : ''}`,
         averageStar: titleModule.feedbackRating.averageStar,
@@ -105,6 +112,7 @@ const getProductDetail = ($, url) => {
         })),
         companyId: recommendModule.companyId,
         memberId: commonModule.sellerAdminSeq,
+        ...extendOutputData
     };
 };
 
@@ -114,6 +122,80 @@ const getProductDescription = async ($) => {
     return $.html();
 };
 
+const getProductFeedback = async ($) => {
+    const feedbackItems = $('.feedback-item').toArray();
+    const scrapedFeeds = [];
+    for (const item of feedbackItems) {
+        const $item = $(item);
+        let infos = $item.find('.user-order-info span').toArray();
+        const info = [];
+        for (const i of infos) {
+            const text = $(i).text().trim().replace(/[\t|\n]+/, '');
+            const arr = text.split(':');
+            info[arr[0]] = arr[1].trim();
+        }
+        let star = undefined;
+        const starsWidth = $('.f-rate-info .star-view > span').eq(0).attr('style');
+        const pxMatch = starsWidth.match(/\d+/);
+        if (pxMatch) {
+            star = 6 - (100 / parseInt(pxMatch[0]));
+        }
+        scrapedFeeds.push({
+            userName: $item.find('.user-name').text().trim(),
+            userCountry: $item.find('.user-country').text().trim(),
+            userStar: star,
+            reviewContent: $item.find('.buyer-feedback span:first-child').text().trim(),
+            reviewTime: $item.find('.buyer-feedback .r-time-new').text().trim(),
+            info
+        })
+    }
+    return scrapedFeeds;
+};
+
+const getProductQA = async (jsonBody) => {
+    let totalAsk = 0;
+    const productQA = [];
+    for (const question of jsonBody.body.questionList) {
+        totalAsk = question.totalAsk;
+        const parsedQuestion = {
+            lang: question.contentLang,
+            totalAnswer: question.totalAnswer,
+            originalContent: question.content,
+            translateContent: question.translateContent,
+            answers: []
+        }
+        for (const answers of question.answers) {
+            parsedQuestion.answers.push({
+                lang: answers.contentLang,
+                totalAnswer: answers.totalAnswer,
+                originalContent: answers.content,
+                translateContent: answers.translateContent,
+            })
+        }
+        productQA.push(parsedQuestion);
+    }
+    return productQA;
+}
+
+const getTotalQuestions = async (jsonBody) => {
+    let totalQuestions = 0;
+    for (const question of jsonBody.body.questionList) {
+        totalQuestions = question.totalAsk;
+        break;
+    }
+    return totalQuestions;
+}
+
+const getMaxReviews = async ($) => {
+    const maxReviewsText = $('.customer-reviews').text();
+    const match = maxReviewsText.match(/\d+/g);
+    if (match){
+        return match[0];
+    }
+    return 0;
+}
+
+
 
 module.exports = {
     getAllMainCategoryPaths,
@@ -122,4 +204,8 @@ module.exports = {
     getProductsOfPage,
     getProductDetail,
     getProductDescription,
+    getProductFeedback,
+    getMaxReviews,
+    getProductQA,
+    getTotalQuestions
 };

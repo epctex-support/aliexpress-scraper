@@ -1,6 +1,7 @@
 const Apify = require('apify');
 const Promise = require('bluebird');
 const tools = require('./tools');
+const { SEARCH_COOKIES_HEADER } = require('./constants')
 
 const {
     utils: { log },
@@ -17,26 +18,25 @@ Apify.main(async () => {
     // Create request queue
     const requestQueue = await Apify.openRequestQueue();
 
-    // Fetch start urls
-    const { startUrls } = userInput;
-
-    if (startUrls.length === 0) {
-        throw new Error('Start URLs must be defined');
-    } else {
-        const mappedStartUrls = tools.mapStartUrls(startUrls);
-        // Initialize first requests
-        for (const mappedStartUrl of mappedStartUrls) {
-            await requestQueue.addRequest({
-                ...mappedStartUrl,
-            });
-        }
+    if (!tools.checkInputParams(userInput)) {
+        throw new Error('You must define at least one of these parameters: searchTerm, startUrls ');
     }
 
-
-    const agent = await tools.getProxyAgent(userInput);
+    const mappedStartUrls = tools.mapStartUrls(userInput);
+    // Initialize first requests
+    for (const mappedStartUrl of mappedStartUrls) {
+        await requestQueue.addRequest({
+            ...mappedStartUrl,
+        });
+    }
 
     // Create route
     const router = tools.createRouter({ requestQueue });
+
+    const proxyConfiguration = userInput.proxy.useApifyProxy ? await Apify.createProxyConfiguration({
+        groups: userInput.proxy.apifyProxyGroups ? userInput.proxy.apifyProxyGroups : [],
+        countryCode: userInput.proxy.countryCode ? userInput.proxy.countryCode : null,
+    }) : null;
 
     log.info('PHASE -- SETTING UP CRAWLER.');
     const crawler = new Apify.CheerioCrawler({
@@ -47,34 +47,25 @@ Apify.main(async () => {
         maxConcurrency: userInput.maxConcurrency,
         ignoreSslErrors: true,
         // Proxy options
-        ...(userInput.proxy.useApifyProxy ? { useApifyProxy: userInput.proxy.useApifyProxy } : {}),
-        ...(userInput.proxy.apifyProxyGroups ? { apifyProxyGroups: userInput.proxy.apifyProxyGroups } : {}),
-        ...(userInput.proxy.proxyUrls ? { proxyUrls: userInput.proxy.proxyUrls } : {}),
+        proxyConfiguration,
         prepareRequestFunction: ({ request }) => {
+            const { language, shipTo, currency } = userInput;
             request.headers = {
                 Connection: 'keep-alive',
-                'User-Agent': Apify.utils.getRandomUserAgent(),
+                cookie: SEARCH_COOKIES_HEADER(currency, shipTo, language),
             };
-
             return request;
         },
         handlePageFunction: async (context) => {
-            const { request, response, $ } = context;
+            const { request, response, $,  body } = context;
 
             log.debug(`CRAWLER -- Processing ${request.url}`);
 
             // Status code check
             if (!response || response.statusCode !== 200
                 || request.url.includes('login.')
+                || body.includes('x5referer')
                 || $('body').data('spm') === 'buyerloginandregister') {
-                throw new Error(`We got blocked by target on ${request.url}`);
-            }
-
-            if (request.userData.label !== 'DESCRIPTION' && !$('script').text().includes('runParams')) {
-                throw new Error(`We got blocked by target on ${request.url}`);
-            }
-
-            if ($('html').text().includes('/_____tmd_____/punish')) {
                 throw new Error(`We got blocked by target on ${request.url}`);
             }
 
@@ -83,7 +74,6 @@ Apify.main(async () => {
 
             // Add user input to context
             context.userInput = userInput;
-            context.agent = agent;
 
             // Redirect to route
             await router(request.userData.label, context);

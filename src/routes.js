@@ -1,6 +1,8 @@
 // routes.js
 const Apify = require('apify');
 const extractors = require('./extractors');
+const tools = require('./tools');
+const { LABELS, SEARCH_URL } = require('./constants');
 
 const {
     utils: { log },
@@ -23,7 +25,7 @@ exports.CATEGORY = async ({ $, request }, { requestQueue }) => {
                 uniqueKey: subCategory.link,
                 url: subCategory.link,
                 userData: {
-                    label: 'CATEGORY',
+                    label: LABELS.CATEGORY,
                 },
             });
         }
@@ -33,7 +35,7 @@ exports.CATEGORY = async ({ $, request }, { requestQueue }) => {
             uniqueKey: `${request.url}-LIST`,
             url: request.url,
             userData: {
-                label: 'LIST',
+                label: LABELS.LIST,
                 pageNum: 1,
                 baseUrl: request.url,
             },
@@ -48,8 +50,8 @@ exports.CATEGORY = async ({ $, request }, { requestQueue }) => {
 // Add next page on request queue
 // Fetch products from list and add all links to request queue
 exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
-    const { endPage = -1 } = userInput;
-    const { pageNum = 1, baseUrl } = request.userData;
+    const { endPage = -1, scrapProducts = true } = userInput;
+    const { pageNum = 1, baseUrl, searchTerm = null } = request.userData;
 
     log.info(`CRAWLER -- Fetching category: ${request.url} with page: ${pageNum}`);
 
@@ -60,12 +62,19 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
     if (productLinks.length > 0) {
         // Check user input
         if (endPage > 0 ? pageNum + 1 <= endPage : true) {
+            let url;
+            if (searchTerm) {
+                url = SEARCH_URL(searchTerm, pageNum + 1)
+            } else {
+                url = `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`;
+            }
             // Add next page of same category to queue
             await requestQueue.addRequest({
-                url: `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc`,
+                url,
                 userData: {
-                    label: 'LIST',
+                    label: LABELS.LIST,
                     pageNum: pageNum + 1,
+                    searchTerm,
                     baseUrl,
                 },
             });
@@ -73,15 +82,17 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
 
 
         // Add all products to request queue
-        for (const productLink of productLinks) {
-            await requestQueue.addRequest({
-                uniqueKey: `${productLink.id}`,
-                url: `https:${productLink.link}`,
-                userData: {
-                    label: 'PRODUCT',
-                    productId: productLink.id,
-                },
-            }, { forefront: true });
+        if (scrapProducts) {
+            for (const productLink of productLinks) {
+                await requestQueue.addRequest({
+                    uniqueKey: `${productLink.id}`,
+                    url: `https:${productLink.link}`,
+                    userData: {
+                        label: LABELS.PRODUCT,
+                        productId: productLink.id,
+                    },
+                }, { forefront: true });
+            }
         }
     } else {
         // End of category with page
@@ -95,36 +106,22 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
 
 // Product page crawler
 // Fetches product detail from detail page
-exports.PRODUCT = async ({ $, userInput, request }, { requestQueue }) => {
+exports.PRODUCT = async ({ $, userInput, request, body }, { requestQueue }) => {
     const { productId } = request.userData;
-    const { includeDescription } = userInput;
+    const { extendOutputFunction } = userInput;
 
     log.info(`CRAWLER -- Fetching product: ${productId}`);
 
     // Fetch product details
-    const product = await extractors.getProductDetail($, request.url);
+    const product = await extractors.getProductDetail($, request.url, extendOutputFunction);
 
-    // Check description option
-    if (includeDescription) {
-        // Fetch description
-        await requestQueue.addRequest({
-            url: product.descriptionURL,
-            userData: {
-                label: 'DESCRIPTION',
-                product,
-            },
-        }, { forefront: true });
-    } else {
-        // Push data
-        await Apify.pushData({ ...product });
-        log.debug(`CRAWLER -- Fetching product: ${productId} completed and successfully pushed to dataset`);
-    }
+    await tools.whatNextToDo(product, userInput, request, requestQueue);
 };
 
 
 // Description page crawler
 // Fetches description detail and push data
-exports.DESCRIPTION = async ({ $, request }) => {
+exports.DESCRIPTION = async ({ $, userInput,  request }, { requestQueue }) => {
     const { product } = request.userData;
 
     log.info(`CRAWLER -- Fetching product description: ${product.id}`);
@@ -134,8 +131,53 @@ exports.DESCRIPTION = async ({ $, request }) => {
     product.description = description;
     delete product.descriptionURL;
 
-    // Push data
-    await Apify.pushData({ ...product });
+    await tools.whatNextToDo(product, userInput, request, requestQueue);
 
-    log.debug(`CRAWLER -- Fetching product description: ${product.id} completed and successfully pushed to dataset`);
 };
+
+exports.FEEDBACK = async ({ $, userInput, request }, { requestQueue }) => {
+    const { product, feedbackPage } = request.userData;
+    const { maxFeedbacks } = userInput;
+
+    log.info(`CRAWLER -- Fetching product feedback ${product.id}, page: ${feedbackPage}`);
+
+    const { userFeedbacks } = product;
+    let reviewsDone = false;
+    const maxReviews = await extractors.getMaxReviews($);
+    if (userFeedbacks.length < maxReviews) {
+        const newFeedbacks = await extractors.getProductFeedback($);
+        reviewsDone = newFeedbacks.length === 0
+        for (const f of newFeedbacks) {
+            if (userFeedbacks.length < maxFeedbacks) {
+                userFeedbacks.push(f);
+            }
+        }
+        product.userFeedbacks = userFeedbacks;
+    }
+    await tools.whatNextToDo(product, userInput, request, requestQueue, maxReviews, false, reviewsDone);
+};
+
+exports.QA = async ({ userInput, request }) => {
+    const { product } = request.userData;
+    const { maxQuestions } = userInput;
+
+    log.info(`CRAWLER -- Fetching product question & answers ${product.id}`);
+
+    const { questionAndAnswers } = product;
+    let page = 1;
+    let totalQuestions = maxQuestions;
+    do {
+        const responseBody = await tools.getQAData(product.id, product.link, page);
+        totalQuestions = await extractors.getTotalQuestions(responseBody);
+        for (const qa of await extractors.getProductQA(responseBody)) {
+            if (questionAndAnswers.length < maxQuestions) {
+                questionAndAnswers.push(qa);
+            } else {
+                break;
+            }
+        }
+        page++;
+    } while (questionAndAnswers.length < maxQuestions && questionAndAnswers.length < totalQuestions)
+    product.questionAndAnswers = questionAndAnswers;
+    await tools.whatNextToDo(product, userInput, request, null, 1, true);
+}
