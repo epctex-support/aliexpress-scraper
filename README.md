@@ -22,23 +22,29 @@ The input of this scraper should be JSON containing the list of pages on Aliexpr
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
+| startUrls | Array | (optional) List of Aliexpress URLs. You should only provide category detail or product detail URLs |
 | searchTerms | Array | (optional) List of terms what can be searched in aliexpress search engine |
 | language | String | (optional) Select language from list in which will be products default is English (en_US) |
 | shipTo | String | (optional) Select country where the products will be shipped default is US  |
 | currency | String | (optional) Select currency in which the products price will be default is USD |
 | startPage | Integer | (optional) Starting page for each category that scraped. With that option you can split your actor into multiple tasks. Default is 1. |
 | endPage | Integer | (optional) End page for each category that scraped. With that option you can split your actor into multiple tasks. If not defined, then the actor will scrape all pages    |
+| maxItems | Integer | (optional) You can limit scraped products. This should be useful when you search through the all subcategories. Default is 1000 products.|
 | includeDescription | Boolean | (optional) If you want to fetch description HTML you can enable this option. However keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much CUs.  |
-| startUrls | Array | (optional) List of Aliexpress URLs. You should only provide category detail or product detail URLs |
+| searchInSubcategories | Boolean | (optional) You can turn off searching in subcategories. Default is true.  |
 | maxFeedback | Integer | (optional) Max count of scraped feedbacks |
 | maxQuestions | Integer | (optional) Max count of scraped buyer Q&A |
 | proxy | Object | Proxy configuration |
 | extendOutputFunction | String | (optional) Function that takes a JQuery handle ($) as argument and returns object with data |
 This solution requires the use of **Proxy servers**, either your own proxy servers or you can use <a href="https://www.apify.com/docs/proxy">Apify Proxy</a>.
 
+##### Tip
+When you add category URL to **startUrls** set **start** and **end** page and let **searchInSubcategories** parameter on
+the logic of start and end page will be propagate to all subcategories so in fact actor scrape much more products than you assume.
+Because actor will scrape limit pages for all subcategories. Then you can use **maxItems** parameter.
 
 ### Compute Unit Consumption
-The actor optimized to run blazing fast and scrape many product as possible. Therefore, it forefronts all product detail requests. If actor doesn't block very often it'll scrape ~14K products in 14 minutes with ~1.8-2.0 compute units.
+The actor optimized to run blazing fast and scrape many as product as possible. Therefore, it forefronts all product detail requests. If actor doesn't block very often it'll scrape ~14K products in 14 minutes with ~1.8-2.0 compute units.
 
 ### Aliexpress Scraper Input example
 ```json
