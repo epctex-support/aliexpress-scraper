@@ -46,13 +46,8 @@ Apify.main(async () => {
     }) : null;
 
 
-    setInterval(async () => {
-        await Apify.setValue('STATS', stats);
-        console.log(stats);
-    }, 1000 * 60);
-
-    Apify.events.on('migrating', async () => {
-        log.info('Saving state before migration');
+    Apify.events.on('persistState', async () => {
+        console.dir(stats);
         await Apify.setValue('STATS', stats);
     });
 
