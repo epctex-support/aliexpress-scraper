@@ -106,9 +106,12 @@ const getProductDetail = async ($, url, extendOutputFunction) => {
         prices: skuModule.skuPriceList.map(skuPriceItem => ({
             price: skuPriceItem.skuVal.skuAmount.formatedAmount,
             attributes: skuPriceItem.skuPropIds.split(',')
-                .map(propId => (skuModule.productSKUPropertyList ? skuModule.productSKUPropertyList
+                .map(propId => {
+                    const propVal = skuModule.productSKUPropertyList ? skuModule.productSKUPropertyList
                     .reduce((arr, obj) => { return arr.concat(obj.skuPropertyValues); }, [])
-                    .find(propVal => propVal.propertyValueId === parseInt(propId, 10)).propertyValueName : null)),
+                    .find(propVal => propVal.propertyValueId === parseInt(propId, 10)) : null
+                    return propVal ? propVal.propertyValueName : null;
+                }),
         })),
         companyId: recommendModule.companyId,
         memberId: commonModule.sellerAdminSeq,

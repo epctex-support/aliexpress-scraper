@@ -5,6 +5,8 @@
 - language : Select language of aliexpress site, option has effect on product detail, product feedback, Q&A
 - shipTo : Select country where product will be shipped
 - currency : Select currency of the product price
+- maxItems : You can limit scraped products
+- searchInSubcategories : You can turn off enqueuing products from subcategories
 - maxFeedback : You can limit of scraped feedback items
 - maxQuestions : You can limit of scraped Q&A items
 - extendOutputFunction : You can write your own scraped function which will be applicated on product detail page

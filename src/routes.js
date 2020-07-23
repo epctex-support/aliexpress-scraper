@@ -11,21 +11,31 @@ const {
 // Categoy page crawler
 // Add next page on request queue
 // Fetch products from list and add all links to request queue
-exports.CATEGORY = async ({ $, request }, { requestQueue }) => {
+exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) => {
     log.info(`CRAWLER -- Fetching category link: ${request.url}`);
-
+    const { startPage, searchInSubcategories = true, maxItems = 1000 } = userInput;
     // Extract sub category links
     const subCategories = await extractors.getAllSubCategories($);
+    // If enqueued details are higher than maxItems INPUT params break category enqueuing
+    if (maxItems <= stats.enqueueDetails){
+        return;
+    }
 
-    // If sub categories are more than 0
-    if (subCategories.length > 0) {
+    // If sub categories are more than 0 and input param is true
+    if (subCategories.length > 0 && searchInSubcategories) {
+        stats.categories += subCategories.length;
         // Add all sub categories to request queue
         for (const subCategory of subCategories) {
+            let url = subCategory.link;
+            if (startPage) {
+                url = `${url}?page=${startPage}`
+            }
             await requestQueue.addRequest({
-                uniqueKey: subCategory.link,
-                url: subCategory.link,
+                uniqueKey: url,
+                url,
                 userData: {
                     label: LABELS.CATEGORY,
+                    pageNum: startPage ? startPage : 1,
                 },
             });
         }
@@ -36,22 +46,25 @@ exports.CATEGORY = async ({ $, request }, { requestQueue }) => {
             url: request.url,
             userData: {
                 label: LABELS.LIST,
-                pageNum: 1,
+                pageNum: startPage ? startPage : 1,
                 baseUrl: request.url,
             },
         });
     }
-
-
     log.debug(`CRAWLER -- Fetched ${subCategories.length} subcategories and moving to each of them`);
 };
 
 // Categoy page crawler
 // Add next page on request queue
 // Fetch products from list and add all links to request queue
-exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
-    const { endPage = -1, scrapProducts = true } = userInput;
+exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
+    const { endPage = -1, scrapProducts = true, maxItems = 1000 } = userInput;
     const { pageNum = 1, baseUrl, searchTerm = null } = request.userData;
+
+    // If enqueued details are higher than maxItems INPUT params break list enqueuing
+    if (maxItems <= stats.enqueueDetails){
+        return;
+    }
 
     log.info(`CRAWLER -- Fetching category: ${request.url} with page: ${pageNum}`);
 
@@ -80,10 +93,12 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
             });
         }
 
-
         // Add all products to request queue
         if (scrapProducts) {
             for (const productLink of productLinks) {
+                if (maxItems <= stats.enqueueDetails){
+                    return;
+                }
                 await requestQueue.addRequest({
                     uniqueKey: `${productLink.id}`,
                     url: `https:${productLink.link}`,
@@ -92,6 +107,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
                         productId: productLink.id,
                     },
                 }, { forefront: true });
+                stats.enqueueDetails++;
             }
         }
     } else {
@@ -106,7 +122,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue }) => {
 
 // Product page crawler
 // Fetches product detail from detail page
-exports.PRODUCT = async ({ $, userInput, request, body }, { requestQueue }) => {
+exports.PRODUCT = async ({ $, userInput, request, body }, { requestQueue, stats }) => {
     const { productId } = request.userData;
     const { extendOutputFunction } = userInput;
 
@@ -114,7 +130,7 @@ exports.PRODUCT = async ({ $, userInput, request, body }, { requestQueue }) => {
 
     // Fetch product details
     const product = await extractors.getProductDetail($, request.url, extendOutputFunction);
-
+    stats.details++;
     await tools.whatNextToDo(product, userInput, request, requestQueue);
 };
 

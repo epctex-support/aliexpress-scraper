@@ -64,6 +64,13 @@
             "description": "The page number that you want to end with. By default there is no end page.",
             "editor": "number"
         },
+        "maxItems": {
+            "title": "Max items",
+            "type": "integer",
+            "description": "Max items per crawl",
+            "default": 1000,
+            "editor": "number"
+        },
         "includeDescription": {
             "title": "Description",
             "type": "boolean",
@@ -71,18 +78,25 @@
             "editor": "checkbox",
             "default": false
         },
+        "searchInSubcategories": {
+            "title": "Search in subcategories",
+            "type": "boolean",
+            "description": "When you add category url into startUrls, you can handle if actor scrape products by subcategories or only by category in url",
+            "editor": "checkbox",
+            "default": true
+        },
         "maxFeedbacks": {
             "title": "Max feedback count",
             "type": "integer",
             "description": "Set number of maximum scraped feedbacks",
-            "default": 5,
+            "default": 0,
             "editor": "number"
         },
         "maxQuestions": {
             "title": "Max question and answers count",
             "type": "integer",
             "description": "Set number of maximum scraped Q&A",
-            "default": 5,
+            "default": 0,
             "editor": "number"
         },
         "proxy":{

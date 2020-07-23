@@ -15,6 +15,13 @@ Apify.main(async () => {
 
     log.info('ACTOR OPTIONS: -- ', userInput);
 
+    const stats = (await Apify.getValue('STATS')) || {
+        categories: 0,
+        enqueueDetails: 0,
+        details: 0,
+        errors: 0,
+    };
+
     // Create request queue
     const requestQueue = await Apify.openRequestQueue();
 
@@ -31,12 +38,23 @@ Apify.main(async () => {
     }
 
     // Create route
-    const router = tools.createRouter({ requestQueue });
+    const router = tools.createRouter({ requestQueue, stats });
 
     const proxyConfiguration = userInput.proxy.useApifyProxy ? await Apify.createProxyConfiguration({
         groups: userInput.proxy.apifyProxyGroups ? userInput.proxy.apifyProxyGroups : [],
         countryCode: userInput.proxy.countryCode ? userInput.proxy.countryCode : null,
     }) : null;
+
+
+    setInterval(async () => {
+        await Apify.setValue('STATS', stats);
+        console.log(stats);
+    }, 1000 * 60);
+
+    Apify.events.on('migrating', async () => {
+        log.info('Saving state before migration');
+        await Apify.setValue('STATS', stats);
+    });
 
     log.info('PHASE -- SETTING UP CRAWLER.');
     const crawler = new Apify.CheerioCrawler({
@@ -66,6 +84,7 @@ Apify.main(async () => {
                 || request.url.includes('login.')
                 || body.includes('x5referer')
                 || $('body').data('spm') === 'buyerloginandregister') {
+                stats.errors ++;
                 throw new Error(`We got blocked by target on ${request.url}`);
             }
 
