@@ -55,7 +55,7 @@ exports.checkInputParams = (userInput) => {
 }
 
 // Detects url and map them to routes
-exports.mapStartUrls = ({ startPage, startUrls, searchTerms }) => {
+exports.mapStartUrls = ({ startUrls, searchTerms }) => {
     let urls = [];
     // Fetch start urls
     if (startUrls) {
@@ -74,12 +74,9 @@ exports.mapStartUrls = ({ startPage, startUrls, searchTerms }) => {
                 };
             } else if (link.includes('/category/') || link.includes('/wholesale')) {
                 routeType = LABELS.CATEGORY;
-                if (startPage) {
-                    url = `${url}?page=${startPage}`
-                }
                 userData = {
                     baseUrl: link,
-                    pageNum: startPage ? startPage : 1,
+                    pageNum: 1,
                 };
             } else {
                 throw new Error('Wrong URL provided to Start URLS!');
@@ -97,13 +94,13 @@ exports.mapStartUrls = ({ startPage, startUrls, searchTerms }) => {
     if (searchTerms) {
         urls = urls.concat(searchTerms.map((searchTerms) => {
             searchTerms = searchTerms.replace(" ", "+");
-            const url = SEARCH_URL(searchTerms, startPage);
+            const url = SEARCH_URL(searchTerms);
             return {
                 url,
                 uniqueKey: url,
                 userData: {
                     label: LABELS.LIST,
-                    pageNum: startPage ? startPage : 1,
+                    pageNum: 1,
                     searchTerm: searchTerms,
                     baseUrl: 'https://www.aliexpress.com/wholesale'
                 }

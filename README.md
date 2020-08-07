@@ -27,8 +27,6 @@ The input of this scraper should be JSON containing the list of pages on Aliexpr
 | language | String | (optional) Select language from list in which will be products default is English (en_US) |
 | shipTo | String | (optional) Select country where the products will be shipped default is US  |
 | currency | String | (optional) Select currency in which the products price will be default is USD |
-| startPage | Integer | (optional) Starting page for each category that scraped. With that option you can split your actor into multiple tasks. Default is 1. |
-| endPage | Integer | (optional) End page for each category that scraped. With that option you can split your actor into multiple tasks. If not defined, then the actor will scrape all pages    |
 | maxItems | Integer | (optional) You can limit scraped products. This should be useful when you search through the all subcategories. Default is 1000 products.|
 | includeDescription | Boolean | (optional) If you want to fetch description HTML you can enable this option. However keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much CUs.  |
 | searchInSubcategories | Boolean | (optional) You can turn off searching in subcategories. Default is true.  |
@@ -53,8 +51,6 @@ The actor optimized to run blazing fast and scrape many as product as possible. 
 	"language": "en_US",
 	"shipTo": "US",
 	"currency": "USD",
-	"startPage": 1,
-	"endPage": 10,
 	"includeDescription": false,
 	"proxy":{"useApifyProxy": true},
 	"startUrls":   [

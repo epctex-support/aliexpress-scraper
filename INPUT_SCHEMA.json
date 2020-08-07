@@ -51,19 +51,6 @@
             "enumTitles": ["US Dollar","Afghan Afghani","Euro","Albanian Lek","Angolan Kwanza","East Carribean Dollar","Armenian Dram","Aruban Florin","St. Helena Pound","Australian Dollar","Azerbaijan New Manat","Bahamian Dollar","Bahraini Dinar","Bangladeshi Taka","Belarusian Ruble","Belize Dollar","CFA Franc BCEAO","Bermudian Dollar","Bhutan Ngultrum","Bosnian Mark","Botswana Pula","Norwegian Kroner","Brazilian Real","Brunei Dollar","Bulgarian Lev","Burundi Franc","Cambodian Riel","CFA Franc BEAC","Canadian Dollar","Cape Verde Escudo","Cayman Islands Dollar","Chilean Peso","Comoros Franc","Congolese Franc","New Zealand Dollar","Costa Rican Colon","Czech Koruna","Danish Krone","Djibouti Franc","Dominican Peso","Egyptian Pound","Salvadoran colón","Eritrean Nakfa","CFP Franc","Nicaraguan Cordoba Oro","Nigerian Naira","Omani Rial","Pakistan Rupee","Papua New Guinea Kina","Paraguay Guarani","Philippine Peso","Polish Zloty","Qatari Rial","Romanian New Leu","Russian Rouble","Rwandan Franc","Samoan Tala","Sao Tome/Principe Dobra","Saudi Riyal","Serbian Dinar","Seychelles Rupee","Sierra Leone Leone","Singapore Dollar","Solomon Islands Dollar","Somali Shilling","South African Rand","Korean Won","Sri Lanka Rupee","Suriname Dollar","Swaziland Lilangeni","Swedish Krona","Swiss Franc","Taiwan Dollar","Tajikistan Somoni","Tanzanian Shilling","Thai Baht","Tongan Pa'anga","Trinidad/Tobago Dollar","Tunisian Dinar","Turkish Lira","Turkmenistan New Manat","Uganda Shilling","Ukraine Hryvnia","Utd. Arab Emir. Dirham","United Kingdom Pound","Uruguayan Peso","Uzbekistan Som","Vanuatu Vatu","Vietnamese Dong","Yemen Rial","Zambian Kwacha","Zimbabwe Dollar","Ethiopian Birr","Falkland Islands Pound","Fiji Dollar","Gambian Dalasi","Georgian Lari","Ghanaian New Cedi","Gibraltar Pound","Guatemalan Quetzal","Guinea Franc","Guyanan Dollar","Haitian Gourde","Honduran Lempira","Hong Kong Dollar","Hungarian Forint","Iceland Krona","Indian Rupee","Indonesian Rupiah","Iraqi Dinar","Israeli New Shekel","Jamaican Dollar","Japanese Yen","Kazakhstan Tenge","Kenyan Shilling","Kuwaiti Dinar","Kyrgyzstanian Som","Lao Kip","Lebanese Pound","Lesotho Loti","Liberian Dollar","Libyan Dinar","Macanese pataca","Macedonian Denar","Malawi Kwacha","Malaysian Ringgit","Maldive Rufiyaa","Mauritius Rupee","Mexican peso","Moldovan Leu","Mongolian Tugrik","Moroccan Dirham","Mozambique New Metical","Myanmar Kyat","Namibia Dollar","Nepalese Rupee","Argentine Peso","Peruvian Nuevo Sol","Algerian Dinar","Jordanian Dinar","Bolivian Mvdol","Unidad de Valor Real","Barbados Dollar","Panamanian balboa","Croatian kuna"],
             "nullable": true
         },
-        "startPage": {
-            "title": "Category start page",
-            "type": "integer",
-            "description": "The page number that you want to start with.",
-            "editor": "number",
-            "default": 1
-        },
-        "endPage": {
-            "title": "Category end page",
-            "type": "integer",
-            "description": "The page number that you want to end with. By default there is no end page.",
-            "editor": "number"
-        },
         "maxItems": {
             "title": "Max items",
             "type": "integer",
