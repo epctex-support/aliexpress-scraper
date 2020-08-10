@@ -13,7 +13,7 @@ const {
 // Fetch products from list and add all links to request queue
 exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) => {
     log.info(`CRAWLER -- Fetching category link: ${request.url}`);
-    const { startPage, searchInSubcategories = true, maxItems = 1000 } = userInput;
+    const { searchInSubcategories = true, maxItems = 1000 } = userInput;
     // Extract sub category links
     const subCategories = await extractors.getAllSubCategories($);
     // If enqueued details are higher than maxItems INPUT params break category enqueuing
@@ -27,15 +27,12 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
         // Add all sub categories to request queue
         for (const subCategory of subCategories) {
             let url = subCategory.link;
-            if (startPage) {
-                url = `${url}?page=${startPage}`
-            }
             await requestQueue.addRequest({
                 uniqueKey: url,
                 url,
                 userData: {
                     label: LABELS.CATEGORY,
-                    pageNum: startPage ? startPage : 1,
+                    pageNum: 1,
                 },
             });
         }
@@ -46,7 +43,7 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
             url: request.url,
             userData: {
                 label: LABELS.LIST,
-                pageNum: startPage ? startPage : 1,
+                pageNum: 1,
                 baseUrl: request.url,
             },
         });
@@ -58,7 +55,7 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
 // Add next page on request queue
 // Fetch products from list and add all links to request queue
 exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
-    const { endPage = -1, scrapProducts = true, maxItems = 1000 } = userInput;
+    const { scrapProducts = true, maxItems = 1000 } = userInput;
     const { pageNum = 1, baseUrl, searchTerm = null } = request.userData;
 
     // If enqueued details are higher than maxItems INPUT params break list enqueuing
@@ -73,25 +70,22 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
 
     // If products are more than 0
     if (productLinks.length > 0) {
-        // Check user input
-        if (endPage > 0 ? pageNum + 1 <= endPage : true) {
-            let url;
-            if (searchTerm) {
-                url = SEARCH_URL(searchTerm, pageNum + 1)
-            } else {
-                url = `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`;
-            }
-            // Add next page of same category to queue
-            await requestQueue.addRequest({
-                url,
-                userData: {
-                    label: LABELS.LIST,
-                    pageNum: pageNum + 1,
-                    searchTerm,
-                    baseUrl,
-                },
-            });
+        let url;
+        if (searchTerm) {
+            url = SEARCH_URL(searchTerm, pageNum + 1)
+        } else {
+            url = `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`;
         }
+        // Add next page of same category to queue
+        await requestQueue.addRequest({
+            url,
+            userData: {
+                label: LABELS.LIST,
+                pageNum: pageNum + 1,
+                searchTerm,
+                baseUrl,
+            },
+        });
 
         // Add all products to request queue
         if (scrapProducts) {
@@ -143,8 +137,7 @@ exports.DESCRIPTION = async ({ $, userInput,  request }, { requestQueue }) => {
     log.info(`CRAWLER -- Fetching product description: ${product.id}`);
 
     // Fetch product details
-    const description = await extractors.getProductDescription($);
-    product.description = description;
+    product.description = await extractors.getProductDescription($);
     delete product.descriptionURL;
 
     await tools.whatNextToDo(product, userInput, request, requestQueue);

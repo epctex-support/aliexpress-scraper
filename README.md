@@ -12,6 +12,9 @@ The Aliexpress data scraper supports the following features:
 - Scrape questions of product detail - you can scrape buyers Q&A of product
 - You can set language, currency and region for shipping
 
+####Aliexpress specific
+Don't worry when you get little bit different products than you saw in browser page. Aliexpress is ordering products differently for each user..
+
 ## Bugs, fixes, updates and changelog
 This scraper is under active development. Check [CHANGELOG.md](https://github.com/tugkan/aliexpress-scraper/blob/master/CHANGELOG.md) for more detailed information
 - 2020-16-07 - New SDK version, new parameters for better scraping.
@@ -27,8 +30,6 @@ The input of this scraper should be JSON containing the list of pages on Aliexpr
 | language | String | (optional) Select language from list in which will be products default is English (en_US) |
 | shipTo | String | (optional) Select country where the products will be shipped default is US  |
 | currency | String | (optional) Select currency in which the products price will be default is USD |
-| startPage | Integer | (optional) Starting page for each category that scraped. With that option you can split your actor into multiple tasks. Default is 1. |
-| endPage | Integer | (optional) End page for each category that scraped. With that option you can split your actor into multiple tasks. If not defined, then the actor will scrape all pages    |
 | maxItems | Integer | (optional) You can limit scraped products. This should be useful when you search through the all subcategories. Default is 1000 products.|
 | includeDescription | Boolean | (optional) If you want to fetch description HTML you can enable this option. However keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much CUs.  |
 | searchInSubcategories | Boolean | (optional) You can turn off searching in subcategories. Default is true.  |
@@ -53,8 +54,6 @@ The actor optimized to run blazing fast and scrape many as product as possible. 
 	"language": "en_US",
 	"shipTo": "US",
 	"currency": "USD",
-	"startPage": 1,
-	"endPage": 10,
 	"includeDescription": false,
 	"proxy":{"useApifyProxy": true},
 	"startUrls":   [
