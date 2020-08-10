@@ -13,7 +13,7 @@ The Aliexpress data scraper supports the following features:
 - You can set language, currency and region for shipping
 
 ####Aliexpress specific
-Don't worry when you get little bit different products than you saw in browser page. Because i don't know how Aliexpress in order of products.
+Don't worry when you get little bit different products than you saw in browser page. Aliexpress is ordering products differently for each user..
 
 ## Bugs, fixes, updates and changelog
 This scraper is under active development. Check [CHANGELOG.md](https://github.com/tugkan/aliexpress-scraper/blob/master/CHANGELOG.md) for more detailed information
