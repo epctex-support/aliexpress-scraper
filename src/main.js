@@ -1,7 +1,7 @@
 const Apify = require('apify');
 const Promise = require('bluebird');
 const tools = require('./tools');
-const { SEARCH_COOKIES_HEADER } = require('./constants')
+const { SEARCH_COOKIES_HEADER, LABELS } = require('./constants');
 
 const {
     utils: { log },
@@ -12,6 +12,10 @@ Apify.main(async () => {
     log.info('PHASE -- STARTING ACTOR.');
 
     const userInput = await Apify.getInput();
+
+    if (userInput.debugLog) {
+        log.setLevel(log.LEVELS.DEBUG);
+    }
 
     log.info('ACTOR OPTIONS: -- ', userInput);
 
@@ -29,27 +33,22 @@ Apify.main(async () => {
         throw new Error('You must define at least one of these parameters: searchTerm, startUrls ');
     }
 
-    const mappedStartUrls = tools.mapStartUrls(userInput);
-    // Initialize first requests
-    for (const mappedStartUrl of mappedStartUrls) {
-        await requestQueue.addRequest({
-            ...mappedStartUrl,
-        });
-    }
+    await tools.categorizeStartUrls(userInput, requestQueue);
 
     // Create route
     const router = tools.createRouter({ requestQueue, stats });
 
-    const proxyConfiguration = userInput.proxy.useApifyProxy ? await Apify.createProxyConfiguration({
-        groups: userInput.proxy.apifyProxyGroups ? userInput.proxy.apifyProxyGroups : [],
-        countryCode: userInput.proxy.countryCode ? userInput.proxy.countryCode : null,
-    }) : null;
-
+    const proxyConfiguration = userInput.proxy && userInput.proxy.useApifyProxy ? await Apify.createProxyConfiguration({
+        ...userInput.proxy,
+        countryCode: (userInput.proxy.apifyProxyCountry ? userInput.proxy.apifyProxyCountry : undefined),
+    }) : undefined;
 
     Apify.events.on('persistState', async () => {
         console.dir(stats);
         await Apify.setValue('STATS', stats);
     });
+
+    const cookies = tools.appendCookies(proxyConfiguration);
 
     log.info('PHASE -- SETTING UP CRAWLER.');
     const crawler = new Apify.CheerioCrawler({
@@ -59,27 +58,53 @@ Apify.main(async () => {
         requestTimeoutSecs: 300,
         maxConcurrency: userInput.maxConcurrency,
         ignoreSslErrors: true,
+        useSessionPool: true,
         // Proxy options
         proxyConfiguration,
-        prepareRequestFunction: ({ request }) => {
+        prepareRequestFunction: async ({ request, session }) => {
             const { language, shipTo, currency } = userInput;
-            request.headers = {
-                Connection: 'keep-alive',
-                cookie: SEARCH_COOKIES_HEADER(currency, shipTo, language),
-            };
-            return request;
+            const { headers } = request;
+
+            headers.Accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8';
+            headers['Accept-Language'] = `${language.replace('_', '-')},${language.split('_')[0]};q=0.9`;
+            headers['Accept-Encoding'] = 'gzip, deflate, br';
+            headers['Cache-Control'] = 'no-cache';
+            headers.Connection = 'keep-alive';
+            headers.Pragma = 'no-cache';
+            headers.DNT = 1;
+            headers['Upgrade-Insecure-Requests'] = 1;
+
+            if ([LABELS.CATEGORY, LABELS.LIST].includes(request.userData.label)) {
+                await cookies({ session, headers, language, shipTo, currency });
+                log.debug('Cookies were set', { url: request.url });
+                headers.Referer = 'https://www.aliexpress.com';
+            }
+
+            headers.Cookie = session.getCookieString('https://www.aliexpress.com') || SEARCH_COOKIES_HEADER(currency, shipTo, language);
+            headers['User-Agent'] = session.userData.userAgent || tools.randomUserAgent.random().toString();
         },
         handlePageFunction: async (context) => {
-            const { request, response, $,  body } = context;
+            const { request, response, $, body, session } = context;
+
+            console.log(request.headers);
 
             log.debug(`CRAWLER -- Processing ${request.url}`);
 
+            if (!response) {
+                throw new Error('Empty response');
+            }
+
+            if (response.statusCode === 404) {
+                request.noRetry = true;
+                throw new Error('URL not found');
+            }
+
             // Status code check
-            if (!response || response.statusCode !== 200
-                || request.url.includes('login.')
-                || body.includes('x5referer')
+            if (body.includes('ui-unusual ui-unusual-busy')
+                || body.includes('localStorage.x5referer')
                 || $('body').data('spm') === 'buyerloginandregister') {
-                stats.errors ++;
+                session.retire();
+                stats.errors++;
                 throw new Error(`We got blocked by target on ${request.url}`);
             }
 

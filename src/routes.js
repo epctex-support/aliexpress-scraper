@@ -15,9 +15,10 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
     log.info(`CRAWLER -- Fetching category link: ${request.url}`);
     const { searchInSubcategories = true, maxItems = 1000 } = userInput;
     // Extract sub category links
-    const subCategories = await extractors.getAllSubCategories($);
+    const subCategories = extractors.getAllSubCategories($);
+
     // If enqueued details are higher than maxItems INPUT params break category enqueuing
-    if (maxItems <= stats.enqueueDetails){
+    if (maxItems <= stats.enqueueDetails) {
         return;
     }
 
@@ -26,7 +27,7 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
         stats.categories += subCategories.length;
         // Add all sub categories to request queue
         for (const subCategory of subCategories) {
-            let url = subCategory.link;
+            const url = subCategory.link;
             await requestQueue.addRequest({
                 uniqueKey: url,
                 url,
@@ -59,7 +60,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
     const { pageNum = 1, baseUrl, searchTerm = null } = request.userData;
 
     // If enqueued details are higher than maxItems INPUT params break list enqueuing
-    if (maxItems <= stats.enqueueDetails){
+    if (maxItems <= stats.enqueueDetails) {
         return;
     }
 
@@ -72,7 +73,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
     if (productLinks.length > 0) {
         let url;
         if (searchTerm) {
-            url = SEARCH_URL(searchTerm, pageNum + 1)
+            url = SEARCH_URL(searchTerm, pageNum + 1);
         } else {
             url = `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`;
         }
@@ -90,7 +91,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
         // Add all products to request queue
         if (scrapProducts) {
             for (const productLink of productLinks) {
-                if (maxItems <= stats.enqueueDetails){
+                if (maxItems <= stats.enqueueDetails) {
                     return;
                 }
                 await requestQueue.addRequest({
@@ -109,10 +110,25 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
         log.debug(`CRAWLER -- Last page of category: ${request.url} with page: ${pageNum}.`);
     }
 
-
     log.debug(`CRAWLER -- Fetched product links from ${request.url} with page: ${pageNum}`);
 };
 
+// Categoy page crawler
+// Add next page on request queue
+// Fetch products from list and add all links to request queue
+exports.SHOP = async ({ $, userInput, request }, { requestQueue, stats }) => {
+    const { scrapProducts = true, maxItems = 1000 } = userInput;
+    const { pageNum = 1, baseUrl, searchTerm = null } = request.userData;
+
+    // If enqueued details are higher than maxItems INPUT params break list enqueuing
+    if (maxItems <= stats.enqueueDetails) {
+        return;
+    }
+
+    log.info(`CRAWLER -- Fetching shop first page: ${request.url}`);
+    // TODO: implement AJAX calls to fetch shop render
+    log.debug(`CRAWLER -- Fetched product links from ${request.url} with page: ${pageNum}`);
+};
 
 // Product page crawler
 // Fetches product detail from detail page
@@ -128,10 +144,9 @@ exports.PRODUCT = async ({ $, userInput, request, body }, { requestQueue, stats 
     await tools.whatNextToDo(product, userInput, request, requestQueue);
 };
 
-
 // Description page crawler
 // Fetches description detail and push data
-exports.DESCRIPTION = async ({ $, userInput,  request }, { requestQueue }) => {
+exports.DESCRIPTION = async ({ $, userInput, request }, { requestQueue }) => {
     const { product } = request.userData;
 
     log.info(`CRAWLER -- Fetching product description: ${product.id}`);
@@ -141,7 +156,6 @@ exports.DESCRIPTION = async ({ $, userInput,  request }, { requestQueue }) => {
     delete product.descriptionURL;
 
     await tools.whatNextToDo(product, userInput, request, requestQueue);
-
 };
 
 exports.FEEDBACK = async ({ $, userInput, request }, { requestQueue }) => {
@@ -155,7 +169,7 @@ exports.FEEDBACK = async ({ $, userInput, request }, { requestQueue }) => {
     const maxReviews = await extractors.getMaxReviews($);
     if (userFeedbacks.length < maxReviews) {
         const newFeedbacks = await extractors.getProductFeedback($);
-        reviewsDone = newFeedbacks.length === 0
+        reviewsDone = newFeedbacks.length === 0;
         for (const f of newFeedbacks) {
             if (userFeedbacks.length < maxFeedbacks) {
                 userFeedbacks.push(f);
@@ -186,7 +200,7 @@ exports.QA = async ({ userInput, request }) => {
             }
         }
         page++;
-    } while (questionAndAnswers.length < maxQuestions && questionAndAnswers.length < totalQuestions)
+    } while (questionAndAnswers.length < maxQuestions && questionAndAnswers.length < totalQuestions);
     product.questionAndAnswers = questionAndAnswers;
     await tools.whatNextToDo(product, userInput, request, null, 1, true);
-}
+};

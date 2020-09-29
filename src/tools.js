@@ -1,11 +1,25 @@
 const Apify = require('apify');
 const URL = require('url');
 const vm = require('vm');
+const UserAgents = require('user-agents');
 const routes = require('./routes');
-const { LABELS, FEEDBACK_URL, QA_URL, COMMON_HEADER, SEARCH_URL } = require('./constants')
+const { LABELS, FEEDBACK_URL, QA_URL, COMMON_HEADER, SEARCH_URL, SEARCH_COOKIES_HEADER } = require('./constants');
+
 const {
     utils: { log, requestAsBrowser },
 } = Apify;
+
+exports.randomUserAgent = new UserAgents(({ userAgent, viewportHeight, viewportWidth }) => {
+    return (
+        viewportHeight >= 600
+        && viewportWidth >= 800
+        && /^Mozilla/.test(userAgent)
+        && !/Firefox/.test(userAgent)
+        && /\d$/.test(userAgent)
+        && /(X11|Win64|Intel Mac OS X)/.test(userAgent)
+        && userAgent.length <= 120
+    );
+});
 
 // Create router
 exports.createRouter = (globalContext) => {
@@ -27,42 +41,30 @@ exports.evalExtendOutputFunction = (functionString) => {
     }
 
     return func;
-}
-
-// Creates proxy URL with user input
-exports.createProxyUrl = async (userInput) => {
-    const { apifyProxyGroups, useApifyProxy, proxyUrls } = userInput;
-    if (proxyUrls && proxyUrls.length > 0) {
-        return proxyUrls[0];
-    }
-
-    if (useApifyProxy) {
-        return `http://${apifyProxyGroups ? apifyProxyGroups.join(',') : 'auto'}:${process.env.APIFY_PROXY_PASSWORD}@proxy.apify.com:8000`;
-    }
-
-    return '';
 };
 
 exports.checkInputParams = (userInput) => {
     let run = false;
     const { startUrls, searchTerms } = userInput;
-    if (startUrls && startUrls.length > 0){
+    if (startUrls && startUrls.length > 0) {
         run = true;
     } else if (searchTerms && searchTerms.length > 0) {
         run = true;
     }
     return run;
-}
+};
 
 // Detects url and map them to routes
-exports.mapStartUrls = ({ startUrls, searchTerms }) => {
-    let urls = [];
-    // Fetch start urls
-    if (startUrls) {
-        urls = urls.concat(startUrls.map((startUrl) => {
-            const parsedURL = URL.parse(startUrl.url);
+exports.categorizeStartUrls = async ({ startUrls, searchTerms }, requestQueue) => {
+    if (startUrls && startUrls.length) {
+        // enables using requestsFromUrl mixed with plain startUrls
+        const rl = await Apify.openRequestList('STARTURLS', startUrls);
+        let req;
+
+        while (req = await rl.fetchNextRequest()) {
+            const parsedURL = URL.parse(req.url);
             const link = `https://www.aliexpress.com${parsedURL.pathname}`;
-            let url = link;
+            const url = link;
             let routeType = '';
             let userData = {};
 
@@ -78,46 +80,54 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
                     baseUrl: link,
                     pageNum: 1,
                 };
+            } else if (link.includes('/store/')) {
+                throw new Error('Stores urls arent implemented yet');
+                // routeType = LABELS.SHOP;
+                // userData = {
+                //     baseUrl: link,
+                //     pageNum: 1,
+                // };
             } else {
                 throw new Error('Wrong URL provided to Start URLS!');
             }
 
             userData.label = routeType;
 
-            return {
+            await requestQueue.addRequest({
                 uniqueKey: link,
                 url,
                 userData,
-            };
-        }));
+            });
+        }
     }
+
     if (searchTerms) {
-        urls = urls.concat(searchTerms.map((searchTerms) => {
-            searchTerms = searchTerms.replace(" ", "+");
-            const url = SEARCH_URL(searchTerms);
-            return {
+        for (const searchTerm of searchTerms) {
+            const st = searchTerm.replace(' ', '+');
+            const url = SEARCH_URL(st);
+
+            await requestQueue.addRequest({
                 url,
                 uniqueKey: url,
                 userData: {
                     label: LABELS.LIST,
                     pageNum: 1,
-                    searchTerm: searchTerms,
-                    baseUrl: 'https://www.aliexpress.com/wholesale'
-                }
-            }
-        }))
+                    searchTerm: st,
+                    baseUrl: 'https://www.aliexpress.com/wholesale',
+                },
+            });
+        }
     }
-    return urls;
 };
 
 exports.getQAData = async (productId, referer, page = 1) => {
     const response = await requestAsBrowser({
         url: QA_URL(productId, page),
         headers: COMMON_HEADER(referer),
-        json: true
-    })
+        json: true,
+    });
     return response.body;
-}
+};
 
 exports.whatNextToDo = async (product, userInput, request, requestQueue, maxReviews = 1, qaDone = false, reviewsDone = false) => {
     const { feedbackPage = 0 } = request.userData;
@@ -164,4 +174,33 @@ exports.whatNextToDo = async (product, userInput, request, requestQueue, maxRevi
         await Apify.pushData({ ...product });
         log.debug(`CRAWLER -- Fetching product: ${product.id} completed and successfully pushed to dataset`);
     }
-}
+};
+
+/**
+ * Grabs the initial cookies to pass to category and search pages
+ *
+ * @param {Apify.ProxyConfiguration} proxyConfig
+ * @returns {(params: { session: Apify.Session, headers: any, language: string, shipTo: string, currency: string }) => Promise<void>}
+ */
+exports.appendCookies = (proxyConfig) => {
+    return async ({ session, headers, currency, shipTo, language }) => {
+        const userAgent = exports.randomUserAgent.random().toString();
+
+        log.debug('Going to get cookies', { headers, userAgent, userData: session.userData });
+
+        const response = await requestAsBrowser({
+            useInsecureHttpParser: true,
+            proxyUrl: proxyConfig.newUrl(session.id),
+            headers: {
+                ...headers,
+                Cookie: SEARCH_COOKIES_HEADER(currency, shipTo, language),
+                'User-Agent': userAgent,
+            },
+            ignoreSslErrors: true,
+            url: 'https://www.aliexpress.com',
+        });
+
+        session.userData.userAgent = userAgent;
+        session.setCookiesFromResponse(response);
+    };
+};

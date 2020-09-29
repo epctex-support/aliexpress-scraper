@@ -100,6 +100,13 @@
             "description": "Function that takes a JQuery handle ($) as argument and returns data that will be merged with the default output",
             "prefill": "($) => { return {} }",
             "editor": "javascript"
+        },
+        "debugLog": {
+            "title": "Debug log",
+            "description": "Enables verbose debugging log",
+            "type": "boolean",
+            "default": false,
+            "editor": "checkbox"
         }
     }
 }

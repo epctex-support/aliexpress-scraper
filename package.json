@@ -3,15 +3,21 @@
 	"version": "1.0.0",
 	"description": "Aliexpress.com scraper.",
 	"dependencies": {
-		"apify": "^0.21.3",
+		"apify": "^0.21.4",
 		"bluebird": "^3.7.1",
 		"cheerio": "^1.0.0-rc.3",
-		"lodash": "^4.17.15",
-		"safe-eval": "^0.4.1"
+		"lodash": "^4.17.20",
+		"user-agents": "^1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@apify/eslint-config": "^0.1.1",
+		"@typescript-eslint/eslint-plugin": "^4.2.0",
+		"typescript": "^4.0.3",
+		"eslint": "^7.9.0"
+	},
 	"scripts": {
-		"start": "node src/main.js"
+        "start": "node src/main.js",
+        "lint": "eslint --fix ./src/*.js"
 	},
 	"author": "Tugkan Cengiz",
 	"license": "ISC"
