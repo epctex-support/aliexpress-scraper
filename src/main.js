@@ -86,8 +86,6 @@ Apify.main(async () => {
         handlePageFunction: async (context) => {
             const { request, response, $, body, session } = context;
 
-            console.log(request.headers);
-
             log.debug(`CRAWLER -- Processing ${request.url}`);
 
             if (!response) {
