@@ -91,6 +91,7 @@
             "type": "object",
             "description": "Select proxies to be used by your crawler.",
             "default": { "useApifyProxy": true },
+            "prefill": { "useApifyProxy": true },
             "editor": "proxy"
         },
         "extendOutputFunction": {
