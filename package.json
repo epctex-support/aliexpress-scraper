@@ -10,7 +10,10 @@
 		"lodash": "^4.17.15",
 		"safe-eval": "^0.4.1"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@apify/eslint-config": "^0.1.3",
+		"eslint": "^7.23.0"
+	},
 	"scripts": {
 		"start": "node src/main.js"
 	},

@@ -2,7 +2,8 @@ const Apify = require('apify');
 const URL = require('url');
 const vm = require('vm');
 const routes = require('./routes');
-const { LABELS, FEEDBACK_URL, QA_URL, COMMON_HEADER, SEARCH_URL } = require('./constants')
+const { LABELS, FEEDBACK_URL, QA_URL, COMMON_HEADER, SEARCH_URL } = require('./constants');
+
 const {
     utils: { log, requestAsBrowser },
 } = Apify;
@@ -27,7 +28,7 @@ exports.evalExtendOutputFunction = (functionString) => {
     }
 
     return func;
-}
+};
 
 //
 exports.proxyConfiguration = async ({
@@ -81,25 +82,31 @@ exports.createProxyUrl = async (userInput) => {
 exports.checkInputParams = (userInput) => {
     let run = false;
     const { startUrls, searchTerms } = userInput;
-    if (startUrls && startUrls.length > 0){
+    if (startUrls && startUrls.length > 0) {
         run = true;
     } else if (searchTerms && searchTerms.length > 0) {
         run = true;
     }
     return run;
-}
+};
 
 // this is the utils function to add urls form text file (either Google sheet or csv)
-const fromStartUrls = async function* (startUrls, name = 'STARTURLS') {
-    const rl = await Apify.openRequestList(name, startUrls);
+const fromStartUrls = async (startUrls) => {
+    const requestList = await Apify.openRequestList('STARTURLS', startUrls);
 
-    /** @type {Apify.Request | null} */
-    let rq;
+    const requests = [];
 
     // eslint-disable-next-line no-cond-assign
-    while (rq = await rl.fetchNextRequest()) {
-        yield rq;
+    for (;;) {
+        /** @type {Apify.Request | null} */
+        const request = await requestList.fetchNextRequest();
+        if (request) {
+            requests.push(request);
+        } else {
+            break;
+        }
     }
+    return requests;
 };
 
 // Detects url and map them to routes
@@ -107,10 +114,12 @@ exports.mapStartUrls = async ({ startUrls, searchTerms }) => {
     let urls = [];
     // Fetch start urls
     if (startUrls) {
-        for await (const startUrl of fromStartUrls(startUrls)) {
+        // Expands URLs from txt files/sheets
+        const parsedStartUrls = await fromStartUrls(startUrls);
+        for (const startUrl of parsedStartUrls) {
             const parsedURL = URL.parse(startUrl.url);
             const link = `https://www.aliexpress.com${parsedURL.pathname}`;
-            let url = link;
+            const url = link;
             let routeType = '';
             let userData = {};
 
@@ -132,16 +141,16 @@ exports.mapStartUrls = async ({ startUrls, searchTerms }) => {
 
             userData.label = routeType;
 
-            return {
+            urls.push({
                 uniqueKey: link,
                 url,
                 userData,
-            };
-        };
+            });
+        }
     }
     if (searchTerms) {
         urls = urls.concat(searchTerms.map((searchTerms) => {
-            searchTerms = searchTerms.replace(" ", "+");
+            searchTerms = searchTerms.replace(' ', '+');
             const url = SEARCH_URL(searchTerms);
             return {
                 url,
@@ -150,10 +159,10 @@ exports.mapStartUrls = async ({ startUrls, searchTerms }) => {
                     label: LABELS.LIST,
                     pageNum: 1,
                     searchTerm: searchTerms,
-                    baseUrl: 'https://www.aliexpress.com/wholesale'
-                }
-            }
-        }))
+                    baseUrl: 'https://www.aliexpress.com/wholesale',
+                },
+            };
+        }));
     }
     return urls;
 };
@@ -162,10 +171,10 @@ exports.getQAData = async (productId, referer, page = 1) => {
     const response = await requestAsBrowser({
         url: QA_URL(productId, page),
         headers: COMMON_HEADER(referer),
-        json: true
-    })
+        json: true,
+    });
     return response.body;
-}
+};
 
 exports.whatNextToDo = async (product, userInput, request, requestQueue, maxReviews = 1, qaDone = false, reviewsDone = false) => {
     const { feedbackPage = 0 } = request.userData;
@@ -212,4 +221,4 @@ exports.whatNextToDo = async (product, userInput, request, requestQueue, maxRevi
         await Apify.pushData({ ...product });
         log.debug(`CRAWLER -- Fetching product: ${product.id} completed and successfully pushed to dataset`);
     }
-}
+};

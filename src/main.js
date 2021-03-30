@@ -31,10 +31,8 @@ Apify.main(async () => {
 
     const mappedStartUrls = await tools.mapStartUrls(userInput);
     // Initialize first requests
-    for (const mappedStartUrl of [mappedStartUrls]) {
-        await requestQueue.addRequest(
-            { ...mappedStartUrl, }
-        );
+    for (const mappedStartUrl of mappedStartUrls) {
+        await requestQueue.addRequest(mappedStartUrl);
     }
 
     // Create route
