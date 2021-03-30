@@ -10,3 +10,10 @@
 - maxFeedback : You can limit of scraped feedback items
 - maxQuestions : You can limit of scraped Q&A items
 - extendOutputFunction : You can write your own scraped function which will be applicated on product detail page
+
+### 2021-25-03 - New SDK version, proxy verification and csv input.
+
+#### New features
+- proxies : It is no longer possible to run the actor without a proxy on the platfrom
+- Google sheets/CSV input : It is possible now to add the input into a text file.
+

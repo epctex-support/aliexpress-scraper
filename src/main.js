@@ -29,22 +29,18 @@ Apify.main(async () => {
         throw new Error('You must define at least one of these parameters: searchTerm, startUrls ');
     }
 
-    const mappedStartUrls = tools.mapStartUrls(userInput);
+    const mappedStartUrls = await tools.mapStartUrls(userInput);
     // Initialize first requests
-    for (const mappedStartUrl of mappedStartUrls) {
-        await requestQueue.addRequest({
-            ...mappedStartUrl,
-        });
+    for (const mappedStartUrl of [mappedStartUrls]) {
+        await requestQueue.addRequest(
+            { ...mappedStartUrl, }
+        );
     }
 
     // Create route
     const router = tools.createRouter({ requestQueue, stats });
 
-    const proxyConfiguration = userInput.proxy.useApifyProxy ? await Apify.createProxyConfiguration({
-        groups: userInput.proxy.apifyProxyGroups ? userInput.proxy.apifyProxyGroups : [],
-        countryCode: userInput.proxy.countryCode ? userInput.proxy.countryCode : null,
-    }) : null;
-
+    const proxyConfig = await tools.proxyConfiguration({proxyConfig: userInput.proxy});
 
     Apify.events.on('persistState', async () => {
         console.dir(stats);
@@ -60,7 +56,7 @@ Apify.main(async () => {
         maxConcurrency: userInput.maxConcurrency,
         ignoreSslErrors: true,
         // Proxy options
-        proxyConfiguration,
+        proxyConfiguration: proxyConfig,
         prepareRequestFunction: ({ request }) => {
             const { language, shipTo, currency } = userInput;
             request.headers = {

@@ -29,6 +29,41 @@ exports.evalExtendOutputFunction = (functionString) => {
     return func;
 }
 
+//
+exports.proxyConfiguration = async ({
+    proxyConfig,
+    required = true,
+    force = Apify.isAtHome(),
+    blacklist = ['GOOGLESERP'],
+    hint = [],
+}) => {
+    const configuration = await Apify.createProxyConfiguration(proxyConfig);
+
+    // this works for custom proxyUrls
+    if (Apify.isAtHome() && required) {
+        if (!configuration || (!configuration.usesApifyProxy && (!configuration.proxyUrls || !configuration.proxyUrls.length)) || !configuration.newUrl()) {
+            throw new Error('\n=======\nYou must use Apify proxy or custom proxy URLs\n\n=======');
+        }
+    }
+
+    // check when running on the platform by default
+    if (force) {
+        // only when actually using Apify proxy it needs to be checked for the groups
+        if (configuration && configuration.usesApifyProxy) {
+            if (blacklist.some((blacklisted) => (configuration.groups || []).includes(blacklisted))) {
+                throw new Error(`\n=======\nThese proxy groups cannot be used in this actor. Choose other group or contact support@apify.com to give you proxy trial:\n\n*  ${blacklist.join('\n*  ')}\n\n=======`);
+            }
+
+            // specific non-automatic proxy groups like RESIDENTIAL, not an error, just a hint
+            if (hint.length && !hint.some((group) => (configuration.groups || []).includes(group))) {
+                Apify.utils.log.info(`\n=======\nYou can pick specific proxy groups for better experience:\n\n*  ${hint.join('\n*  ')}\n\n=======`);
+            }
+        }
+    }
+
+    return configuration;
+};
+
 // Creates proxy URL with user input
 exports.createProxyUrl = async (userInput) => {
     const { apifyProxyGroups, useApifyProxy, proxyUrls } = userInput;
@@ -54,12 +89,25 @@ exports.checkInputParams = (userInput) => {
     return run;
 }
 
+// this is the utils function to add urls form text file (either Google sheet or csv)
+const fromStartUrls = async function* (startUrls, name = 'STARTURLS') {
+    const rl = await Apify.openRequestList(name, startUrls);
+
+    /** @type {Apify.Request | null} */
+    let rq;
+
+    // eslint-disable-next-line no-cond-assign
+    while (rq = await rl.fetchNextRequest()) {
+        yield rq;
+    }
+};
+
 // Detects url and map them to routes
-exports.mapStartUrls = ({ startUrls, searchTerms }) => {
+exports.mapStartUrls = async ({ startUrls, searchTerms }) => {
     let urls = [];
     // Fetch start urls
     if (startUrls) {
-        urls = urls.concat(startUrls.map((startUrl) => {
+        for await (const startUrl of fromStartUrls(startUrls)) {
             const parsedURL = URL.parse(startUrl.url);
             const link = `https://www.aliexpress.com${parsedURL.pathname}`;
             let url = link;
@@ -89,7 +137,7 @@ exports.mapStartUrls = ({ startUrls, searchTerms }) => {
                 url,
                 userData,
             };
-        }));
+        };
     }
     if (searchTerms) {
         urls = urls.concat(searchTerms.map((searchTerms) => {
