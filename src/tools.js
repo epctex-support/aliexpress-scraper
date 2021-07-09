@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const Apify = require('apify');
 const URL = require('url');
 const vm = require('vm');

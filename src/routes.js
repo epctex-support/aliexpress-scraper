@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 // routes.js
 const Apify = require('apify');
 const extractors = require('./extractors');
@@ -17,16 +18,17 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
     // Extract sub category links
     const subCategories = await extractors.getAllSubCategories($);
     // If enqueued details are higher than maxItems INPUT params break category enqueuing
-    if (maxItems <= stats.enqueueDetails){
+    if (maxItems <= stats.enqueueDetails) {
         return;
     }
+    log.info(`SubCategories: ${subCategories}`);
 
     // If sub categories are more than 0 and input param is true
     if (subCategories.length > 0 && searchInSubcategories) {
         stats.categories += subCategories.length;
         // Add all sub categories to request queue
         for (const subCategory of subCategories) {
-            let url = subCategory.link;
+            const url = subCategory.link;
             await requestQueue.addRequest({
                 uniqueKey: url,
                 url,
@@ -38,6 +40,7 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
         }
     } else {
         // Move to listing
+        log.info(`there are no subcategories. moving to listing...`);
         await requestQueue.addRequest({
             uniqueKey: `${request.url}-LIST`,
             url: request.url,
@@ -48,7 +51,7 @@ exports.CATEGORY = async ({ $, userInput, request }, { requestQueue, stats }) =>
             },
         });
     }
-    log.debug(`CRAWLER -- Fetched ${subCategories.length} subcategories and moving to each of them`);
+    log.info(`CRAWLER -- Fetched ${subCategories.length} subcategories and moving to each of them`);
 };
 
 // Categoy page crawler
@@ -59,7 +62,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
     const { pageNum = 1, baseUrl, searchTerm = null } = request.userData;
 
     // If enqueued details are higher than maxItems INPUT params break list enqueuing
-    if (maxItems <= stats.enqueueDetails){
+    if (maxItems <= stats.enqueueDetails) {
         return;
     }
 
@@ -72,7 +75,7 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
     if (productLinks.length > 0) {
         let url;
         if (searchTerm) {
-            url = SEARCH_URL(searchTerm, pageNum + 1)
+            url = SEARCH_URL(searchTerm, pageNum + 1);
         } else {
             url = `${baseUrl}?page=${pageNum + 1}&SortType=total_tranpro_desc&g=y`;
         }
@@ -90,12 +93,12 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
         // Add all products to request queue
         if (scrapProducts) {
             for (const productLink of productLinks) {
-                if (maxItems <= stats.enqueueDetails){
+                if (maxItems <= stats.enqueueDetails) {
                     return;
                 }
                 await requestQueue.addRequest({
                     uniqueKey: `${productLink.id}`,
-                    url: `https:${productLink.link}`,
+                    url: `https://www.aliexpress.com/item/${productLink.id}.html`,
                     userData: {
                         label: LABELS.PRODUCT,
                         productId: productLink.id,
@@ -106,13 +109,11 @@ exports.LIST = async ({ $, userInput, request }, { requestQueue, stats }) => {
         }
     } else {
         // End of category with page
-        log.debug(`CRAWLER -- Last page of category: ${request.url} with page: ${pageNum}.`);
+        log.info(`CRAWLER -- Last page of category: ${request.url} with page: ${pageNum}.`);
     }
 
-
-    log.debug(`CRAWLER -- Fetched product links from ${request.url} with page: ${pageNum}`);
+    log.info(`CRAWLER -- Fetched product links from ${request.url} with page: ${pageNum}`);
 };
-
 
 // Product page crawler
 // Fetches product detail from detail page
@@ -128,10 +129,9 @@ exports.PRODUCT = async ({ $, userInput, request, body }, { requestQueue, stats 
     await tools.whatNextToDo(product, userInput, request, requestQueue);
 };
 
-
 // Description page crawler
 // Fetches description detail and push data
-exports.DESCRIPTION = async ({ $, userInput,  request }, { requestQueue }) => {
+exports.DESCRIPTION = async ({ $, userInput, request }, { requestQueue }) => {
     const { product } = request.userData;
 
     log.info(`CRAWLER -- Fetching product description: ${product.id}`);
@@ -141,7 +141,6 @@ exports.DESCRIPTION = async ({ $, userInput,  request }, { requestQueue }) => {
     delete product.descriptionURL;
 
     await tools.whatNextToDo(product, userInput, request, requestQueue);
-
 };
 
 exports.FEEDBACK = async ({ $, userInput, request }, { requestQueue }) => {
@@ -155,7 +154,7 @@ exports.FEEDBACK = async ({ $, userInput, request }, { requestQueue }) => {
     const maxReviews = await extractors.getMaxReviews($);
     if (userFeedbacks.length < maxReviews) {
         const newFeedbacks = await extractors.getProductFeedback($);
-        reviewsDone = newFeedbacks.length === 0
+        reviewsDone = newFeedbacks.length === 0;
         for (const f of newFeedbacks) {
             if (userFeedbacks.length < maxFeedbacks) {
                 userFeedbacks.push(f);
@@ -186,7 +185,7 @@ exports.QA = async ({ userInput, request }) => {
             }
         }
         page++;
-    } while (questionAndAnswers.length < maxQuestions && questionAndAnswers.length < totalQuestions)
+    } while (questionAndAnswers.length < maxQuestions && questionAndAnswers.length < totalQuestions);
     product.questionAndAnswers = questionAndAnswers;
     await tools.whatNextToDo(product, userInput, request, null, 1, true);
-}
+};
