@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const safeEval = require('safe-eval');
 const flattenDeep = require('lodash/flattenDeep');
 const tools = require('./tools')
@@ -39,8 +40,8 @@ const getProductsOfPage = ($) => {
     if (!data.success) {
         throw new Error('We got blocked when trying to fetch products!');
     }
-
-    return data.items && data.items.length > 0 ? data.items.map(item => ({ id: item.productId, name: item.title, link: item.productDetailUrl })) : [];
+    return data.mods && data.mods.itemList.content.length > 0
+        ? data.mods.itemList.content.map(item => ({ id: item.productId, name: item.title.displayTitle })) : [];
 };
 
 // Fetch basic product detail from a global object `runParams`

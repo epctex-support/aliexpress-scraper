@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const Apify = require('apify');
 const Promise = require('bluebird');
 const tools = require('./tools');
@@ -48,9 +49,9 @@ Apify.main(async () => {
     log.info('PHASE -- SETTING UP CRAWLER.');
     const crawler = new Apify.CheerioCrawler({
         requestQueue,
-        handlePageTimeoutSecs: 99999,
+        handlePageTimeoutSecs: 120,
         maxRequestRetries: 10,
-        requestTimeoutSecs: 300,
+        requestTimeoutSecs: 120,
         maxConcurrency: userInput.maxConcurrency,
         ignoreSslErrors: true,
         // Proxy options
@@ -64,7 +65,7 @@ Apify.main(async () => {
             return request;
         },
         handlePageFunction: async (context) => {
-            const { request, response, $,  body } = context;
+            const { request, response, $, body } = context;
 
             log.debug(`CRAWLER -- Processing ${request.url}`);
 
