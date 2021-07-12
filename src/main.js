@@ -49,26 +49,25 @@ Apify.main(async () => {
     log.info('PHASE -- SETTING UP CRAWLER.');
     const crawler = new Apify.CheerioCrawler({
         requestQueue,
-        handlePageTimeoutSecs: 120,
+        handlePageTimeoutSecs: 60,
         maxRequestRetries: 10,
-        requestTimeoutSecs: 120,
+        requestTimeoutSecs: 60,
         maxConcurrency: userInput.maxConcurrency,
         ignoreSslErrors: true,
-        // Proxy options
         proxyConfiguration: proxyConfig,
-        prepareRequestFunction: ({ request }) => {
-            const { language, shipTo, currency } = userInput;
-            request.headers = {
-                Connection: 'keep-alive',
-                cookie: SEARCH_COOKIES_HEADER(currency, shipTo, language),
-            };
-            return request;
-        },
+        preNavigationHooks: [
+            (crawlingContext, requestAsBrowserOptions) => {
+                const { language, shipTo, currency } = userInput;
+                const searchCookie = SEARCH_COOKIES_HEADER(currency, shipTo, language);
+                requestAsBrowserOptions.headers = {
+                    Connection: 'keep-alive',
+                    Cookie: searchCookie,
+                };
+            },
+        ],
         handlePageFunction: async (context) => {
             const { request, response, $, body } = context;
-
             log.debug(`CRAWLER -- Processing ${request.url}`);
-
             // Status code check
             if (!response || response.statusCode !== 200
                 || request.url.includes('login.')
@@ -77,21 +76,15 @@ Apify.main(async () => {
                 stats.errors ++;
                 throw new Error(`We got blocked by target on ${request.url}`);
             }
-
             // Random delay
             await Promise.delay(Math.random() * 3000);
-
             // Add user input to context
             context.userInput = userInput;
-
             // Redirect to route
             await router(request.userData.label, context);
         },
     });
-
     log.info('PHASE -- STARTING CRAWLER.');
-
     await crawler.run();
-
     log.info('PHASE -- ACTOR FINISHED.');
 });

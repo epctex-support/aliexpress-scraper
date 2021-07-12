@@ -1,5 +1,3 @@
-/* eslint-disable linebreak-style */
-// routes.js
 const Apify = require('apify');
 const extractors = require('./extractors');
 const tools = require('./tools');
