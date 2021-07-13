@@ -1,4 +1,4 @@
-### 2020-16-07 - New SDK version, new parameters for better scraping.
+### 2021-16-07 - New SDK version, new parameters for better scraping.
 
 #### New features
 - searchTerms : List of terms witch can be searched by Aliexpress search engine
