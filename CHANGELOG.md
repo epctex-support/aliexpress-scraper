@@ -17,3 +17,9 @@
 - proxies : It is no longer possible to run the actor without a proxy on the platfrom
 - Google sheets/CSV input : It is possible now to add the input into a text file.
 
+### 2021-10-07 - New SDK version (1.3.0), changes due to API update.
+
+#### Bugs
+- fixed issue with getting 0 items on the "LIST" page due to API changes.
+- actor no longer returns empty dataset.
+- fixed issue with language variation and currency in the output.
