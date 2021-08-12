@@ -107,6 +107,6 @@
         }
     },
     "required": [
-        "proxyConfiguration"
+        "proxy"
     ]
 }
