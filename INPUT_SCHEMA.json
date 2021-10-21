@@ -1,112 +1,117 @@
+
 {
-    "title": "Aliexpress Scraper",
-    "description": "An actor that scrapes products from aliexpress.com",
-    "type": "object",
-    "schemaVersion": 1,
-    "properties": {
-        "startUrls": {
-            "title": "Start URLs",
-            "type": "array",
-            "description": "URLs to start with. It should be category or product detail URLs",
-            "prefill": [
-                { "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
-                { "url": "https://www.aliexpress.com/item/32940810951.html" }
-            ],
-            "editor": "requestListSources"
-        },
-        "searchTerms": {
-            "title": "Search terms",
-            "type": "array",
-            "description": "Terms for fulltext search in Aliexpress page",
-            "editor": "stringList",
-            "uniqueItems": true
-        },
-        "language":{
-            "title": "Language",
-            "type": "string",
-            "description": "Select your language",
-            "editor": "select",
-            "default": "en_US",
-            "prefill": "en_US",
-            "enum": ["en_US","ru_RU","pt_BR","es_ES","fr_FR","pl_PL","iw_IL","it_IT","tr_TR","de_DE","ko_KR","ar_MA","ja_JP","nl_NL","th_TH","vi_VN","in_ID"],
-            "enumTitles": ["English","Russian","Portuguese","Spanish","French","Polish","Israel","Italian","Turkish","German","Korean","Arabic","Japanese","Dutch","Thai","Vietnamese","Indonesia"],
-            "nullable": true
-        },
-        "shipTo":{
-            "title": "Shipping to",
-            "type": "string",
-            "description": "Select your country",
-            "editor": "select",
-            "default": "US",
-            "prefill": "US",
-            "enum": ["AF","ALA","AL","GBA","DZ","AS","AD","AO","AI","AG","AR","AM","AW","ASC","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BA","BW","BR","BG","BF","BI","KH","CM","CA","CV","BQ","KY","CF","TD","CL","CX","CC","CO","KM","ZR","CG","CK","CR","CI","HR","CW","CY","CZ","DK","DJ","DM","DO","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","GF","PF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GGY","GN","GW","GY","HT","HN","HK","HU","IS","IN","ID","IQ","IE","IL","IT","JM","JP","JEY","JO","KZ","KE","KI","KR","KS","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MK","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","MNE","MS","MA","MZ","MM","NA","NR","BN","NP","NL","AN","NC","NZ","NI","NE","NG","NU","NF","MP","NO","OM","OTHER","PK","PW","PS","PA","PG","PY","PE","PH","PL","PT","PR","QA","RE","RO","RU","RW","BLM","KN","LC","MAF","VC","WS","SM","ST","SA","SN","SRB","SC","SL","SG","SX","SK","SI","SB","SO","ZA","SGS","SS","ES","LK","PM","SR","SZ","SE","CH","TW","TJ","TZ","TH","TLS","TG","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","UK","US","UY","UZ","VU","VA","VE","VN","VG","VI","WF","YE","ZM","EAZ","ZW"],
-            "enumTitles": ["Afghanistan","Aland Islands","Albania","Alderney","Algeria","American Samoa","Andorra","Angola","Anguilla","Antigua and Barbuda","Argentina","Armenia","Aruba","Ascension Island","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Caribbean Netherlands","Cayman Islands","Central African Republic","Chad","Chile","Christmas Island","Cocos (Keeling) Islands","Colombia","Comoros","Congo, The Democratic Republic Of The","Congo, The Republic of Congo","Cook Islands","Costa Rica","Cote D'Ivoire","Croatia (local name: Hrvatska)","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands (Malvinas)","Faroe Islands","Fiji","Finland","France","French Guiana","French Polynesia","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guadeloupe","Guam","Guatemala","Guernsey","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hong Kong,China","Hungary","Iceland","India","Indonesia","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Korea","Kosovo","Kuwait","Kyrgyzstan","Lao People's Democratic Republic","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau,China","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Martinique","Mauritania","Mauritius","Mayotte","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauru","Negara Brunei Darussalam","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Niue","Norfolk Island","Northern Mariana Islands","Norway","Oman","Other Country","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russian Federation","Rwanda","Saint Barthelemy","Saint Kitts and Nevis","Saint Lucia","Saint Martin","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Sint Maarten (Netherlands)","Slovakia (Slovak Republic)","Slovenia","Solomon Islands","Somalia","South Africa","South Georgia and the South Sandwich Islands","South Sudan","Spain","Sri Lanka","St. Pierre and Miquelon","Suriname","Swaziland","Sweden","Switzerland","Taiwan,China","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Turks and Caicos Islands","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City State (Holy See)","Venezuela","Vietnam","Virgin Islands (British)","Virgin Islands (U.S.)","Wallis And Futuna Islands","Yemen","Zambia","Zanzibar","Zimbabwe"],
-            "nullable": true
-        },
-        "currency":{
-            "title": "Currency",
-            "type": "string",
-            "description": "Select your currency",
-            "editor": "select",
-            "default": "USD",
-            "prefill": "USD",
-            "enum": ["USD","AFN","EUR","ALL","AOA","XCD","AMD","AWG","SHP","AUD","AZN","BSD","BHD","BDT","BYR","BZD","XOF","BMD","BTN","BAM","BWP","NOK","BRL","BND","BGN","BIF","KHR","XAF","CAD","CVE","KYD","CLP","KMF","CDF","NZD","CRC","CZK","DKK","DJF","DOP","EGP","SVC","ERN","XPF","NIO","NGN","OMR","PKR","PGK","PYG","PHP","PLN","QAR","RON","RUB","RWF","WST","STD","SAR","RSD","SCR","SLL","SGD","SBD","SOS","ZAR","KRW","LKR","SRD","SZL","SEK","CHF","TWD","TJS","TZS","THB","TOP","TTD","TND","TRY","TMT","UGX","UAH","AED","GBP","UYU","UZS","VUV","VND","YER","ZMW","ZWL","ETB","FKP","FJD","GMD","GEL","GHS","GIP","GTQ","GNF","GYD","HTG","HNL","HKD","HUF","ISK","INR","IDR","IQD","ILS","JMD","JPY","KZT","KES","KWD","KGS","LAK","LBP","LSL","LRD","LYD","MOP","MKD","MWK","MYR","MVR","MUR","MXN","MDL","MNT","MAD","MZN","MMK","NAD","NPR","ARS","PEN","DZD","JOD","BOB","COP","BBD","PAB","HRK"],
-            "enumTitles": ["US Dollar","Afghan Afghani","Euro","Albanian Lek","Angolan Kwanza","East Carribean Dollar","Armenian Dram","Aruban Florin","St. Helena Pound","Australian Dollar","Azerbaijan New Manat","Bahamian Dollar","Bahraini Dinar","Bangladeshi Taka","Belarusian Ruble","Belize Dollar","CFA Franc BCEAO","Bermudian Dollar","Bhutan Ngultrum","Bosnian Mark","Botswana Pula","Norwegian Kroner","Brazilian Real","Brunei Dollar","Bulgarian Lev","Burundi Franc","Cambodian Riel","CFA Franc BEAC","Canadian Dollar","Cape Verde Escudo","Cayman Islands Dollar","Chilean Peso","Comoros Franc","Congolese Franc","New Zealand Dollar","Costa Rican Colon","Czech Koruna","Danish Krone","Djibouti Franc","Dominican Peso","Egyptian Pound","Salvadoran colón","Eritrean Nakfa","CFP Franc","Nicaraguan Cordoba Oro","Nigerian Naira","Omani Rial","Pakistan Rupee","Papua New Guinea Kina","Paraguay Guarani","Philippine Peso","Polish Zloty","Qatari Rial","Romanian New Leu","Russian Rouble","Rwandan Franc","Samoan Tala","Sao Tome/Principe Dobra","Saudi Riyal","Serbian Dinar","Seychelles Rupee","Sierra Leone Leone","Singapore Dollar","Solomon Islands Dollar","Somali Shilling","South African Rand","Korean Won","Sri Lanka Rupee","Suriname Dollar","Swaziland Lilangeni","Swedish Krona","Swiss Franc","Taiwan Dollar","Tajikistan Somoni","Tanzanian Shilling","Thai Baht","Tongan Pa'anga","Trinidad/Tobago Dollar","Tunisian Dinar","Turkish Lira","Turkmenistan New Manat","Uganda Shilling","Ukraine Hryvnia","Utd. Arab Emir. Dirham","United Kingdom Pound","Uruguayan Peso","Uzbekistan Som","Vanuatu Vatu","Vietnamese Dong","Yemen Rial","Zambian Kwacha","Zimbabwe Dollar","Ethiopian Birr","Falkland Islands Pound","Fiji Dollar","Gambian Dalasi","Georgian Lari","Ghanaian New Cedi","Gibraltar Pound","Guatemalan Quetzal","Guinea Franc","Guyanan Dollar","Haitian Gourde","Honduran Lempira","Hong Kong Dollar","Hungarian Forint","Iceland Krona","Indian Rupee","Indonesian Rupiah","Iraqi Dinar","Israeli New Shekel","Jamaican Dollar","Japanese Yen","Kazakhstan Tenge","Kenyan Shilling","Kuwaiti Dinar","Kyrgyzstanian Som","Lao Kip","Lebanese Pound","Lesotho Loti","Liberian Dollar","Libyan Dinar","Macanese pataca","Macedonian Denar","Malawi Kwacha","Malaysian Ringgit","Maldive Rufiyaa","Mauritius Rupee","Mexican peso","Moldovan Leu","Mongolian Tugrik","Moroccan Dirham","Mozambique New Metical","Myanmar Kyat","Namibia Dollar","Nepalese Rupee","Argentine Peso","Peruvian Nuevo Sol","Algerian Dinar","Jordanian Dinar","Bolivian Mvdol","Unidad de Valor Real","Barbados Dollar","Panamanian balboa","Croatian kuna"],
-            "nullable": true
-        },
-        "maxItems": {
-            "title": "Max items",
-            "type": "integer",
-            "description": "Max items per crawl",
-            "prefill": 50,
-            "editor": "number"
-        },
-        "includeDescription": {
-            "title": "Description",
-            "type": "boolean",
-            "description": "Include description for products. It might slow the process a bit",
-            "editor": "checkbox",
-            "default": false
-        },
-        "searchInSubcategories": {
-            "title": "Search in subcategories",
-            "type": "boolean",
-            "description": "When you add category url into startUrls, you can handle if actor scrape products by subcategories or only by category in url",
-            "editor": "checkbox",
-            "default": true
-        },
-        "maxFeedbacks": {
-            "title": "Max feedback count",
-            "type": "integer",
-            "description": "Set number of maximum scraped feedbacks",
-            "default": 0,
-            "editor": "number"
-        },
-        "maxQuestions": {
-            "title": "Max question and answers count",
-            "type": "integer",
-            "description": "Set number of maximum scraped Q&A",
-            "default": 0,
-            "editor": "number"
-        },
-        "proxy":{
-            "title": "Proxy configuration",
-            "type": "object",
-            "description": "Select proxies to be used by your crawler.",
-            "default": { "useApifyProxy": true },
-            "prefill": { "useApifyProxy": true },
-            "editor": "proxy"
-        },
-        "extendOutputFunction": {
-            "title": "Extend output function",
-            "type": "string",
-            "nullable": true,
-            "description": "Function that takes a JQuery handle ($) as argument and returns data that will be merged with the default output",
-            "prefill": "($) => { return {} }",
-            "editor": "javascript"
-        }
-    },
-    "required": [
-        "proxy"
-    ]
+  "title": "Aliexpress Scraper",
+  "description": "An actor that scrapes products from aliexpress.com",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+      "startUrls": {
+          "title": "Start URLs",
+          "type": "array",
+          "description": "URLs to start with. It should be category or product detail URLs",
+          "prefill": [
+              { "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
+              { "url": "https://www.aliexpress.com/item/32940810951.html" }
+          ],
+          "editor": "requestListSources"
+      },
+      "maxItems": {
+          "title": "Max items",
+          "type": "integer",
+          "description": "Max items per crawl",
+          "prefill": 50,
+          "editor": "number"
+      },
+      "searchTerms": {
+          "title": "Search terms",
+          "type": "array",
+          "description": "Terms for fulltext search in Aliexpress page",
+          "editor": "stringList",
+          "uniqueItems": true,
+          "sectionCaption": "Use search term instead of URL"
+      },
+      "searchInSubcategories": {
+          "title": "Search in subcategories",
+          "type": "boolean",
+          "description": "When you add category url into startUrls, you can handle if actor scrape products by subcategories or only by category in url",
+          "editor": "checkbox",
+          "default": true,
+          "sectionCaption": "Other filters and specifications (subcategories, language, shipping, currency)"
+      },
+      "language":{
+          "title": "Language",
+          "type": "string",
+          "description": "Select your language",
+          "editor": "select",
+          "default": "en_US",
+          "prefill": "en_US",
+          "enum": ["en_US","ru_RU","pt_BR","es_ES","fr_FR","pl_PL","iw_IL","it_IT","tr_TR","de_DE","ko_KR","ar_MA","ja_JP","nl_NL","th_TH","vi_VN","in_ID"],
+          "enumTitles": ["English","Russian","Portuguese","Spanish","French","Polish","Israel","Italian","Turkish","German","Korean","Arabic","Japanese","Dutch","Thai","Vietnamese","Indonesia"],
+          "nullable": true
+      },
+      "shipTo":{
+          "title": "Shipping to",
+          "type": "string",
+          "description": "Select your country",
+          "editor": "select",
+          "default": "US",
+          "prefill": "US",
+          "enum": ["AF","ALA","AL","GBA","DZ","AS","AD","AO","AI","AG","AR","AM","AW","ASC","AU","AT","AZ","BS","BH","BD","BB","BY","BE","BZ","BJ","BM","BT","BO","BA","BW","BR","BG","BF","BI","KH","CM","CA","CV","BQ","KY","CF","TD","CL","CX","CC","CO","KM","ZR","CG","CK","CR","CI","HR","CW","CY","CZ","DK","DJ","DM","DO","EC","EG","SV","GQ","ER","EE","ET","FK","FO","FJ","FI","FR","GF","PF","GA","GM","GE","DE","GH","GI","GR","GL","GD","GP","GU","GT","GGY","GN","GW","GY","HT","HN","HK","HU","IS","IN","ID","IQ","IE","IL","IT","JM","JP","JEY","JO","KZ","KE","KI","KR","KS","KW","KG","LA","LV","LB","LS","LR","LY","LI","LT","LU","MO","MK","MG","MW","MY","MV","ML","MT","MH","MQ","MR","MU","YT","MX","FM","MD","MC","MN","MNE","MS","MA","MZ","MM","NA","NR","BN","NP","NL","AN","NC","NZ","NI","NE","NG","NU","NF","MP","NO","OM","OTHER","PK","PW","PS","PA","PG","PY","PE","PH","PL","PT","PR","QA","RE","RO","RU","RW","BLM","KN","LC","MAF","VC","WS","SM","ST","SA","SN","SRB","SC","SL","SG","SX","SK","SI","SB","SO","ZA","SGS","SS","ES","LK","PM","SR","SZ","SE","CH","TW","TJ","TZ","TH","TLS","TG","TO","TT","TN","TR","TM","TC","TV","UG","UA","AE","UK","US","UY","UZ","VU","VA","VE","VN","VG","VI","WF","YE","ZM","EAZ","ZW"],
+          "enumTitles": ["Afghanistan","Aland Islands","Albania","Alderney","Algeria","American Samoa","Andorra","Angola","Anguilla","Antigua and Barbuda","Argentina","Armenia","Aruba","Ascension Island","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bermuda","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Caribbean Netherlands","Cayman Islands","Central African Republic","Chad","Chile","Christmas Island","Cocos (Keeling) Islands","Colombia","Comoros","Congo, The Democratic Republic Of The","Congo, The Republic of Congo","Cook Islands","Costa Rica","Cote D'Ivoire","Croatia (local name: Hrvatska)","Curacao","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Falkland Islands (Malvinas)","Faroe Islands","Fiji","Finland","France","French Guiana","French Polynesia","Gabon","Gambia","Georgia","Germany","Ghana","Gibraltar","Greece","Greenland","Grenada","Guadeloupe","Guam","Guatemala","Guernsey","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hong Kong,China","Hungary","Iceland","India","Indonesia","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jersey","Jordan","Kazakhstan","Kenya","Kiribati","Korea","Kosovo","Kuwait","Kyrgyzstan","Lao People's Democratic Republic","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau,China","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Martinique","Mauritania","Mauritius","Mayotte","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Montserrat","Morocco","Mozambique","Myanmar","Namibia","Nauru","Negara Brunei Darussalam","Nepal","Netherlands","Netherlands Antilles","New Caledonia","New Zealand","Nicaragua","Niger","Nigeria","Niue","Norfolk Island","Northern Mariana Islands","Norway","Oman","Other Country","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Reunion","Romania","Russian Federation","Rwanda","Saint Barthelemy","Saint Kitts and Nevis","Saint Lucia","Saint Martin","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Sint Maarten (Netherlands)","Slovakia (Slovak Republic)","Slovenia","Solomon Islands","Somalia","South Africa","South Georgia and the South Sandwich Islands","South Sudan","Spain","Sri Lanka","St. Pierre and Miquelon","Suriname","Swaziland","Sweden","Switzerland","Taiwan,China","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Turks and Caicos Islands","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City State (Holy See)","Venezuela","Vietnam","Virgin Islands (British)","Virgin Islands (U.S.)","Wallis And Futuna Islands","Yemen","Zambia","Zanzibar","Zimbabwe"],
+          "nullable": true
+      },
+      "currency":{
+          "title": "Currency",
+          "type": "string",
+          "description": "Select your currency",
+          "editor": "select",
+          "default": "USD",
+          "prefill": "USD",
+          "enum": ["USD","AFN","EUR","ALL","AOA","XCD","AMD","AWG","SHP","AUD","AZN","BSD","BHD","BDT","BYR","BZD","XOF","BMD","BTN","BAM","BWP","NOK","BRL","BND","BGN","BIF","KHR","XAF","CAD","CVE","KYD","CLP","KMF","CDF","NZD","CRC","CZK","DKK","DJF","DOP","EGP","SVC","ERN","XPF","NIO","NGN","OMR","PKR","PGK","PYG","PHP","PLN","QAR","RON","RUB","RWF","WST","STD","SAR","RSD","SCR","SLL","SGD","SBD","SOS","ZAR","KRW","LKR","SRD","SZL","SEK","CHF","TWD","TJS","TZS","THB","TOP","TTD","TND","TRY","TMT","UGX","UAH","AED","GBP","UYU","UZS","VUV","VND","YER","ZMW","ZWL","ETB","FKP","FJD","GMD","GEL","GHS","GIP","GTQ","GNF","GYD","HTG","HNL","HKD","HUF","ISK","INR","IDR","IQD","ILS","JMD","JPY","KZT","KES","KWD","KGS","LAK","LBP","LSL","LRD","LYD","MOP","MKD","MWK","MYR","MVR","MUR","MXN","MDL","MNT","MAD","MZN","MMK","NAD","NPR","ARS","PEN","DZD","JOD","BOB","COP","BBD","PAB","HRK"],
+          "enumTitles": ["US Dollar","Afghan Afghani","Euro","Albanian Lek","Angolan Kwanza","East Carribean Dollar","Armenian Dram","Aruban Florin","St. Helena Pound","Australian Dollar","Azerbaijan New Manat","Bahamian Dollar","Bahraini Dinar","Bangladeshi Taka","Belarusian Ruble","Belize Dollar","CFA Franc BCEAO","Bermudian Dollar","Bhutan Ngultrum","Bosnian Mark","Botswana Pula","Norwegian Kroner","Brazilian Real","Brunei Dollar","Bulgarian Lev","Burundi Franc","Cambodian Riel","CFA Franc BEAC","Canadian Dollar","Cape Verde Escudo","Cayman Islands Dollar","Chilean Peso","Comoros Franc","Congolese Franc","New Zealand Dollar","Costa Rican Colon","Czech Koruna","Danish Krone","Djibouti Franc","Dominican Peso","Egyptian Pound","Salvadoran colón","Eritrean Nakfa","CFP Franc","Nicaraguan Cordoba Oro","Nigerian Naira","Omani Rial","Pakistan Rupee","Papua New Guinea Kina","Paraguay Guarani","Philippine Peso","Polish Zloty","Qatari Rial","Romanian New Leu","Russian Rouble","Rwandan Franc","Samoan Tala","Sao Tome/Principe Dobra","Saudi Riyal","Serbian Dinar","Seychelles Rupee","Sierra Leone Leone","Singapore Dollar","Solomon Islands Dollar","Somali Shilling","South African Rand","Korean Won","Sri Lanka Rupee","Suriname Dollar","Swaziland Lilangeni","Swedish Krona","Swiss Franc","Taiwan Dollar","Tajikistan Somoni","Tanzanian Shilling","Thai Baht","Tongan Pa'anga","Trinidad/Tobago Dollar","Tunisian Dinar","Turkish Lira","Turkmenistan New Manat","Uganda Shilling","Ukraine Hryvnia","Utd. Arab Emir. Dirham","United Kingdom Pound","Uruguayan Peso","Uzbekistan Som","Vanuatu Vatu","Vietnamese Dong","Yemen Rial","Zambian Kwacha","Zimbabwe Dollar","Ethiopian Birr","Falkland Islands Pound","Fiji Dollar","Gambian Dalasi","Georgian Lari","Ghanaian New Cedi","Gibraltar Pound","Guatemalan Quetzal","Guinea Franc","Guyanan Dollar","Haitian Gourde","Honduran Lempira","Hong Kong Dollar","Hungarian Forint","Iceland Krona","Indian Rupee","Indonesian Rupiah","Iraqi Dinar","Israeli New Shekel","Jamaican Dollar","Japanese Yen","Kazakhstan Tenge","Kenyan Shilling","Kuwaiti Dinar","Kyrgyzstanian Som","Lao Kip","Lebanese Pound","Lesotho Loti","Liberian Dollar","Libyan Dinar","Macanese pataca","Macedonian Denar","Malawi Kwacha","Malaysian Ringgit","Maldive Rufiyaa","Mauritius Rupee","Mexican peso","Moldovan Leu","Mongolian Tugrik","Moroccan Dirham","Mozambique New Metical","Myanmar Kyat","Namibia Dollar","Nepalese Rupee","Argentine Peso","Peruvian Nuevo Sol","Algerian Dinar","Jordanian Dinar","Bolivian Mvdol","Unidad de Valor Real","Barbados Dollar","Panamanian balboa","Croatian kuna"],
+          "nullable": true
+      },
+      "includeDescription": {
+          "title": "Description",
+          "type": "boolean",
+          "description": "Include description for products. It might slow the process a bit",
+          "editor": "checkbox",
+          "default": false,
+          "sectionCaption": "Scraping additional information (description, feedback, questions)"
+      },
+      "maxFeedbacks": {
+          "title": "Max feedback count",
+          "type": "integer",
+          "description": "Set number of maximum scraped feedbacks",
+          "default": 0,
+          "editor": "number"
+      },
+      "maxQuestions": {
+          "title": "Max question and answers count",
+          "type": "integer",
+          "description": "Set number of maximum scraped Q&A",
+          "default": 0,
+          "editor": "number"
+      },
+      "proxy":{
+          "title": "Proxy configuration",
+          "type": "object",
+          "description": "Select proxies to be used by your crawler.",
+          "default": { "useApifyProxy": true },
+          "prefill": { "useApifyProxy": true },
+          "editor": "proxy",
+          "sectionCaption": "Advanced configuration (proxy, extend output function)"
+      },
+      "extendOutputFunction": {
+          "title": "Extend output function",
+          "type": "string",
+          "nullable": true,
+          "description": "Function that takes a JQuery handle ($) as argument and returns data that will be merged with the default output",
+          "prefill": "($) => { return {} }",
+          "editor": "javascript"
+      }
+  },
+  "required": [
+      "proxy"
+  ]
 }
