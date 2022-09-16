@@ -16,8 +16,8 @@ The Aliexpress data scraper supports the following features:
 Don't worry when you get little bit different products than you saw in browser page. Aliexpress is ordering products differently for each user..
 
 ## Bugs, fixes, updates and changelog
-This scraper is under active development. Check [CHANGELOG.md](https://github.com/tugkan/aliexpress-scraper/blob/master/CHANGELOG.md) for more detailed information
-- 2020-16-07 - New SDK version, new parameters for better scraping.
+
+This scraper is under active development. If you have any feature requests you can create an issue from [here](https://github.com/epctex/aliexpress-scraper/issues).
 
 ## Input Parameters
 
