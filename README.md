@@ -1,3 +1,5 @@
+[https://apify.com/epctex/aliexpress-scraper](https://apify.com/epctex/aliexpress-scraper?fpr=yhdrb)
+
 # Actor - Aliexpress Scraper
 
 ## Aliexpress scraper
@@ -6,14 +8,14 @@ Since Aliexpress doesn't provide an API, this actor should help you to retrieve 
 
 The Aliexpress data scraper supports the following features:
 
-- Scrape product details - you can scrape attributes like images, metadata. You can find details below.
-- Scrape product descriptions - you can scrape description HTML of the product.
-- Scrape feedbacks of product detail - you can scrape users feedbacks (name, country, original content, translated content)
-- Scrape questions of product detail - you can scrape buyers Q&A of product
-- You can set language, currency and region for shipping
+- Scrape product details - you can scrape attributes like images, shipping, and metadata. You can find details below.
+- Scrape product descriptions - you can scrape the description HTML of the product.
+- Scrape feedback on product detail - you can scrape user's feedback (name, country, original content, translated content)
+- Scrape questions of product detail - you can scrape buyer's Q&A of product
+- You can set language, currency, and region for shipping
 
 ### Aliexpress specific
-Don't worry when you get little bit different products than you saw in browser page. Aliexpress is ordering products differently for each user..
+Don't worry when you get a little bit different products than you saw on the browser page. Aliexpress is ordering products differently for each user.
 
 ## Need to find product pairs between Aliexpress and another online shop?
 
@@ -21,7 +23,7 @@ Use the [AI Product Matcher](https://apify.com/equidem/ai-product-matcher?fpr=yh
 
 With the AI Product Matcher, you can use scraped product data to monitor product matches across the industry, implement dynamic pricing for your website, replace or complement manual mapping, and obtain realistic estimates against your competition for upcoming promo campaigns. Most importantly, it is relatively easy to get started with (just follow [this guide](https://blog.apify.com/product-matching-ai-pricing-intelligence-web-scraping/)) and is able to **match thousands of product pairs**.
 
-## Bugs, fixes, updates and changelog
+## Bugs, fixes, updates, and changelog
 
 This scraper is under active development. If you have any feature requests you can create an issue from [here](https://github.com/epctex/aliexpress-scraper/issues).
 
@@ -31,55 +33,55 @@ The input of this scraper should be JSON containing the list of pages on Aliexpr
 
 - `startUrls`: (Optional) (Array) List of Aliexpress URLs. You should only provide category detail or product detail URLs.
 
-- `searchTerms`: (Optional) (Array) List of terms what can be searched in aliexpress search engine.
+- `searchTerms`: (Optional) (Array) List of terms that can be searched in aliexpress search engine.
 
-- `language`: (Optional) (String) Select language from list in which will be products default is English (en_US).
+- `language`: (Optional) (String) Select a language from the list in which will be product's default is English (en_US).
 
-- `shipTo`: (Optional) (String) Select country where the products will be shipped default is US.
+- `shipTo`: (Optional) (String) Select the country where the products will be shipped default is US.
 
-- `currency`: (Optional) (String) Select currency in which the products price will be default is USD.
+- `currency`: (Optional) (String) Select the currency in which the product's price will default is USD.
 
 - `searchInSubcategories`: (Optional) (Boolean) You can turn off searching in subcategories. Default is true.
 
-- `includeDescription`: (Optional) (Boolean) If you want to fetch description HTML you can enable this option. However keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much more resources.
+- `includeDescription`: (Optional) (Boolean) If you want to fetch description HTML you can enable this option. However, keep in mind that fetching description takes one extra request which makes your actor a bit slower and takes a bit much more resources.
 
-- `maxFeedback`: (Optional) (Number)  Max count of scraped feedbacks.
+- `maxFeedback`: (Optional) (Number)  Max count of scraped feedback.
 
 - `maxQuestions`: (Optional) (Number)  Max count of scraped buyer Q&A.
 
-- `maxItems`: (Optional) (Number)  You can limit scraped products. This should be useful when you search through the all subcategories. Default is 1000 products.
+- `maxItems`: (Optional) (Number)  You can limit scraped products. This should be useful when you search through all subcategories. The default is 1000 products.
 
 - `proxy`: (Required) (Proxy Object) Proxy configuration.
 
-- `extendOutputFunction`: (Optional) (String) Function that takes a JQuery handle ($) as argument and returns object with data.
+- `extendOutputFunction`: (Optional) (String) Function that takes a JQuery handle ($) as an argument and returns an object with data.
 
 This solution requires the use of **Proxy servers**, either your own proxy servers or you can use [Apify Proxy](https://www.apify.com/docs/proxy).
 
 
 ### Tip
-When you want to have a scrape over a specific listing URL, just copy and paste the link as one of the **startUrl**.
+When you want to scrape over a specific listing URL, just copy and paste the link as one of the **startUrl**.
 
 When you add category URL to **startUrls** set **start** and **end** page and let **searchInSubcategories** parameter on
-the logic of start and end page will be propagate to all subcategories so in fact actor scrape much more products than you assume.
+the logic of the start and end page will be propagated to all subcategories so in fact actors scrape much more products than you assume.
 
 ### Compute Unit Consumption
-The actor optimized to run blazing fast and scrape many as listings as possible. Therefore, it forefronts all listing detail requests. If actor doesn't block very often it'll scrape 100 listings in 2 minutes with ~0.03-0.05 compute units.
+The actor is optimized to run blazing fast and scrape many listings as possible. Therefore, it forefronts all listing detail requests. If the actor doesn't block very often it'll scrape 100 listings in 2 minutes with ~0.03-0.05 compute units.
 
 ### Aliexpress Scraper Input example
 ```json
 {
-	"searchTerms": ["mobile"],
-	"language": "en_US",
-	"shipTo": "US",
-	"currency": "USD",
-	"includeDescription": false,
-	"proxy":{"useApifyProxy": true},
-	"startUrls":   [
-		{ "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
-		{ "url": "https://www.aliexpress.com/item/32940810951.html" }
-	],
-	"maxFeedbacks": 5,
-	"maxQuestions":3
+  "searchTerms": ["mobile"],
+  "language": "en_US",
+  "shipTo": "US",
+  "currency": "USD",
+  "includeDescription": false,
+  "proxy":{"useApifyProxy": true},
+  "startUrls":   [
+    { "url": "https://www.aliexpress.com/category/200003482/dresses.html" },
+    { "url": "https://www.aliexpress.com/item/32940810951.html" }
+  ],
+  "maxFeedbacks": 5,
+  "maxQuestions":3
 }
 
 ```
@@ -209,6 +211,36 @@ The structure of each item in Aliexpress products looks like this:
       ]
     }
   ],
+  "shipping": [
+    {
+      "provider": "China Post Air Parcel",
+      "isShippable": true,
+      "isFree": true,
+      "deliveryDate": "Jul 24",
+      "from": "China",
+      "to": "United States",
+      "isTracked": false
+    },
+    {
+      "provider": "Seller's Shipping Method",
+      "isShippable": true,
+      "isFree": true,
+      "deliveryDate": "2023-08-12",
+      "from": "China",
+      "to": "United States",
+      "isTracked": false
+    },
+    {
+      "provider": "DHL",
+      "isShippable": true,
+      "isFree": false,
+      "price": "$653.94",
+      "deliveryDate": "Jun 16",
+      "from": "China",
+      "to": "United States",
+      "isTracked": true
+    }
+  ],
   "companyId": 230202141,
   "memberId": 220138526,
   "userFeedbacks": [
@@ -320,4 +352,4 @@ The structure of each item in Aliexpress products looks like this:
 ```
 
 ## Contact
-Please visit us through [epctex.com](https://epctex.com) to see all the products that is available for you. If you are looking for any custom integration or so, please reach out to us through the chat box in [epctex.com](https://epctex.com). In need of support? [devops@epctex.com](mailto:devops@epctex.com) is at your service.
+Please visit us through [epctex.com](https://epctex.com) to see all the products that are available for you. If you are looking for any custom integration or so, please reach out to us through the chat box in [epctex.com](https://epctex.com). In need of support? [devops@epctex.com](mailto:devops@epctex.com) is at your service.
